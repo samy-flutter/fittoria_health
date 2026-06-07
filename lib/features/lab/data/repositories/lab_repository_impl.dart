@@ -1,3 +1,6 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
+import '../../../../core/error/exception_handler.dart';
 import '../../domain/repositories/lab_repository.dart';
 import '../data_sources/lab_remote_data_source.dart';
 import '../models/lab_referral.dart';
@@ -9,28 +12,52 @@ class LabRepositoryImpl implements LabRepository {
   LabRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<LabReferralsResponse> getLabReferrals() {
-    return _remoteDataSource.getLabReferrals();
+  Future<Either<Failure, LabReferralsResponse>> getLabReferrals() async {
+    try {
+      final response = await _remoteDataSource.getLabReferrals();
+      return Right(response);
+    } catch (e) {
+      return Left(ExceptionHandler.handle(e));
+    }
   }
 
   @override
-  Future<LabReferralDetailResponse> getLabReferralDetails(int id) {
-    return _remoteDataSource.getLabReferralDetails(id);
+  Future<Either<Failure, LabReferralDetailResponse>> getLabReferralDetails(int id) async {
+    try {
+      final response = await _remoteDataSource.getLabReferralDetails(id);
+      return Right(response);
+    } catch (e) {
+      return Left(ExceptionHandler.handle(e));
+    }
   }
 
   @override
-  Future<void> confirmLabReferral(int id) {
-    return _remoteDataSource.confirmLabReferral(id);
+  Future<Either<Failure, void>> confirmLabReferral(int id) async {
+    try {
+      await _remoteDataSource.confirmLabReferral(id);
+      return const Right(null);
+    } catch (e) {
+      return Left(ExceptionHandler.handle(e));
+    }
   }
 
   @override
-  Future<void> cancelLabReferral(int id) {
-    return _remoteDataSource.cancelLabReferral(id);
+  Future<Either<Failure, void>> cancelLabReferral(int id) async {
+    try {
+      await _remoteDataSource.cancelLabReferral(id);
+      return const Right(null);
+    } catch (e) {
+      return Left(ExceptionHandler.handle(e));
+    }
   }
 
   @override
-  Future<List<LabReport>> getLabReports() async {
-    final response = await _remoteDataSource.getLabReports();
-    return response.orders;
+  Future<Either<Failure, List<LabReport>>> getLabReports() async {
+    try {
+      final response = await _remoteDataSource.getLabReports();
+      return Right(response.orders);
+    } catch (e) {
+      return Left(ExceptionHandler.handle(e));
+    }
   }
 }

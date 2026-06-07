@@ -25,6 +25,8 @@ class AppColors {
   static const Color lightAmberLight = Color(0xFFFEF3E2);
   static const Color lightAmberBorder = Color(0xFFF5C68A);
 
+  static const Color fitOrange = Color(0xFFE8843C);
+
   // --- Dark Theme Colors ---
   static const Color darkBgBase = Color(0xFF060E1E);
   static const Color darkBgSurface = Color(0xFF0D1B2E);

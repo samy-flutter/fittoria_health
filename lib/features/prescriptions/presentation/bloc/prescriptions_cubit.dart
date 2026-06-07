@@ -9,11 +9,11 @@ class PrescriptionsCubit extends Cubit<PrescriptionsState> {
 
   Future<void> loadPrescriptions() async {
     emit(const PrescriptionsLoading());
-    try {
-      final prescriptions = await _repository.getPrescriptions();
-      emit(PrescriptionsLoaded(prescriptions));
-    } catch (e) {
-      emit(PrescriptionsError(e.toString()));
-    }
+    final result = await _repository.getPrescriptions();
+    
+    result.fold(
+      (failure) => emit(PrescriptionsError(failure.message)),
+      (prescriptions) => emit(PrescriptionsLoaded(prescriptions)),
+    );
   }
 }

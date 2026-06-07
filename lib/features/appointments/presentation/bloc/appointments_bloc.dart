@@ -18,13 +18,12 @@ class AppointmentsBloc extends Bloc<AppointmentsEvent, AppointmentsState> {
     Emitter<AppointmentsState> emit,
   ) async {
     emit(AppointmentsLoading());
-    try {
-      final appointments = await _repository.getAppointments();
-      final filter = AppointmentFilter.all;
-      emit(_buildLoadedState(appointments, filter));
-    } catch (e) {
-      emit(AppointmentsError(e.toString()));
-    }
+    final result = await _repository.getAppointments();
+    
+    result.fold(
+      (failure) => emit(AppointmentsError(failure.message)),
+      (appointments) => emit(_buildLoadedState(appointments, AppointmentFilter.all)),
+    );
   }
 
   Future<void> _onCancelAppointment(
@@ -36,15 +35,22 @@ class AppointmentsBloc extends Bloc<AppointmentsEvent, AppointmentsState> {
 
     emit(currentState.copyWith(cancellingId: event.appointmentId));
 
-    try {
-      await _repository.cancelAppointment(event.appointmentId);
-      // Reload to get fresh data
-      final appointments = await _repository.getAppointments();
-      emit(_buildLoadedState(appointments, currentState.activeFilter));
-    } catch (e) {
-      emit(currentState.copyWith(clearCancellingId: true));
-      emit(AppointmentsError(e.toString()));
-    }
+    final cancelResult = await _repository.cancelAppointment(event.appointmentId);
+    
+    await cancelResult.fold(
+      (failure) async {
+        emit(currentState.copyWith(clearCancellingId: true));
+        emit(AppointmentsError(failure.message));
+      },
+      (_) async {
+        // Reload to get fresh data
+        final refreshResult = await _repository.getAppointments();
+        refreshResult.fold(
+          (failure) => emit(AppointmentsError(failure.message)),
+          (appointments) => emit(_buildLoadedState(appointments, currentState.activeFilter)),
+        );
+      },
+    );
   }
 
   void _onChangeFilter(

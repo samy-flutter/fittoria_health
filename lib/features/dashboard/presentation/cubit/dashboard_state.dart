@@ -1,7 +1,6 @@
 import '../../../profile_records/data/models/profile_models.dart';
 import '../../../appointments/data/models/appointment.dart';
-import '../../../invoices/data/models/invoice.dart';
-import '../../../clinics/data/models/clinic.dart';
+import '../../../fit/data/models/fitness_models.dart';
 
 abstract class DashboardState {
   const DashboardState();
@@ -14,34 +13,30 @@ class DashboardLoading extends DashboardState {}
 class DashboardLoaded extends DashboardState {
   final PatientProfile profile;
   final List<Appointment> appointments;
-  final Appointment? nextAppointment;
-  final double? bmi;
-  final String? bmiClassification;
-
-  // Extended fields for full Next.js parity
-  final List<PatientInvoice> invoices;
-  final List<Clinic> clinics;
-  final int pendingInvoiceCount;
-  final List<Appointment> recentVisits; // last 3 completed appointments
+  final FitnessSummary fitnessSummary;
+  final OnboardingStatus onboardingStatus;
 
   const DashboardLoaded({
     required this.profile,
     required this.appointments,
-    this.nextAppointment,
-    this.bmi,
-    this.bmiClassification,
-    this.invoices = const [],
-    this.clinics = const [],
-    this.pendingInvoiceCount = 0,
-    this.recentVisits = const [],
+    required this.fitnessSummary,
+    required this.onboardingStatus,
   });
 
-  List<Appointment> get upcomingAppointments => appointments
-      .where((a) =>
-          ['scheduled', 'waiting', 'in_consultation'].contains(a.status))
-      .toList();
-
-  int get totalVisits => appointments.length;
+  Appointment? get nextAppointment {
+    final upcoming = appointments
+        .where((a) => ['scheduled', 'waiting', 'in_consultation'].contains(a.status))
+        .toList();
+    if (upcoming.isEmpty) return null;
+    
+    upcoming.sort((a, b) {
+      final aDate = DateTime.tryParse('${a.appointmentDate}T${a.slotStart}');
+      final bDate = DateTime.tryParse('${b.appointmentDate}T${b.slotStart}');
+      if (aDate == null || bDate == null) return 0;
+      return aDate.compareTo(bDate);
+    });
+    return upcoming.first;
+  }
 }
 
 class DashboardError extends DashboardState {

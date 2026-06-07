@@ -173,11 +173,9 @@ class _PatientBottomNav extends StatelessWidget {
     IconData icon,
   ) {
     final isActive = currentIndex == index;
-    final accent = isDark ? AppColors.darkTeal : AppColors.lightTeal;
+    final accent = AppColors.fitOrange;
     final muted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
-    final bgActive = isDark
-        ? AppColors.darkTeal.withValues(alpha: 0.15)
-        : AppColors.lightTealLight;
+    final bgActive = AppColors.fitOrange.withValues(alpha: 0.15);
 
     return Expanded(
       child: GestureDetector(
@@ -252,83 +250,13 @@ class _PatientBottomNav extends StatelessWidget {
       ),
       child: SafeArea(
         top: false,
-        child: Stack(
-          clipBehavior: Clip.none,
+        child: Row(
           children: [
-            Row(
-              children: [
-                _buildNavItem(context, 0, 'Home', LucideIcons.layoutDashboard),
-                _buildNavItem(context, 1, 'Find', LucideIcons.building2),
-                // Placeholder for center FAB
-                const Expanded(child: SizedBox()),
-                _buildNavItem(context, 2, 'Visits', LucideIcons.stethoscope),
-                _buildNavItem(context, 3, 'Me', LucideIcons.user),
-              ],
-            ),
-            // Center Book FAB (matches -mt-6 floating behavior)
-            Positioned(
-              top: -24,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: GestureDetector(
-                  onTap: () => context.push('/patient/book'),
-                  child: Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          isDark
-                              ? const Color(0xFF14B8A6)
-                              : AppColors.lightTeal,
-                          isDark
-                              ? const Color(0xFF0D6E6E)
-                              : const Color(0xFF0D6E6E),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(
-                            0xFF0D6E6E,
-                          ).withValues(alpha: 0.35),
-                          blurRadius: 20,
-                          offset: const Offset(0, -2),
-                        ),
-                        BoxShadow(
-                          color: const Color(0xFF0D6E6E).withValues(alpha: 0.3),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          LucideIcons.plus,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Book',
-                          style: GoogleFonts.inter(
-                            fontSize: 8,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white.withValues(alpha: 0.9),
-                            height: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            _buildNavItem(context, 0, 'Home', LucideIcons.layoutDashboard),
+            _buildNavItem(context, 1, 'Fitness', LucideIcons.footprints),
+            _buildNavItem(context, 2, 'Care', LucideIcons.heart),
+            _buildNavItem(context, 3, 'Community', LucideIcons.users),
+            _buildNavItem(context, 4, 'More', LucideIcons.moreHorizontal),
           ],
         ),
       ),

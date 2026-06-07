@@ -1,6 +1,8 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
 import '../../data/models/appointment.dart';
 
 abstract class AppointmentsRepository {
-  Future<List<Appointment>> getAppointments();
-  Future<void> cancelAppointment(int appointmentId);
+  Future<Either<Failure, List<Appointment>>> getAppointments();
+  Future<Either<Failure, void>> cancelAppointment(int appointmentId);
 }

@@ -21,6 +21,7 @@ LookupItem _$LookupItemFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$LookupItem {
+  @JsonKey(fromJson: _parseIntRequired)
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
 
@@ -41,7 +42,7 @@ abstract class $LookupItemCopyWith<$Res> {
     $Res Function(LookupItem) then,
   ) = _$LookupItemCopyWithImpl<$Res, LookupItem>;
   @useResult
-  $Res call({int id, String name});
+  $Res call({@JsonKey(fromJson: _parseIntRequired) int id, String name});
 }
 
 /// @nodoc
@@ -84,7 +85,7 @@ abstract class _$$LookupItemImplCopyWith<$Res>
   ) = __$$LookupItemImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name});
+  $Res call({@JsonKey(fromJson: _parseIntRequired) int id, String name});
 }
 
 /// @nodoc
@@ -119,12 +120,16 @@ class __$$LookupItemImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$LookupItemImpl implements _LookupItem {
-  const _$LookupItemImpl({required this.id, required this.name});
+  const _$LookupItemImpl({
+    @JsonKey(fromJson: _parseIntRequired) required this.id,
+    required this.name,
+  });
 
   factory _$LookupItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$LookupItemImplFromJson(json);
 
   @override
+  @JsonKey(fromJson: _parseIntRequired)
   final int id;
   @override
   final String name;
@@ -163,7 +168,7 @@ class _$LookupItemImpl implements _LookupItem {
 
 abstract class _LookupItem implements LookupItem {
   const factory _LookupItem({
-    required final int id,
+    @JsonKey(fromJson: _parseIntRequired) required final int id,
     required final String name,
   }) = _$LookupItemImpl;
 
@@ -171,6 +176,7 @@ abstract class _LookupItem implements LookupItem {
       _$LookupItemImpl.fromJson;
 
   @override
+  @JsonKey(fromJson: _parseIntRequired)
   int get id;
   @override
   String get name;
@@ -189,6 +195,7 @@ PatientProfile _$PatientProfileFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$PatientProfile {
+  @JsonKey(fromJson: _parseIntRequired)
   int get id => throw _privateConstructorUsedError;
   @JsonKey(name: 'full_name')
   String get fullName => throw _privateConstructorUsedError;
@@ -196,11 +203,11 @@ mixin _$PatientProfile {
   String? get email => throw _privateConstructorUsedError;
   @JsonKey(name: 'fittoria_id')
   String? get fittoriaId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'gender_id')
+  @JsonKey(name: 'gender_id', fromJson: _parseInt)
   int? get genderId => throw _privateConstructorUsedError;
   @JsonKey(name: 'gender_name')
   String? get genderName => throw _privateConstructorUsedError;
-  @JsonKey(name: 'blood_group_id')
+  @JsonKey(name: 'blood_group_id', fromJson: _parseInt)
   int? get bloodGroupId => throw _privateConstructorUsedError;
   @JsonKey(name: 'blood_group_name')
   String? get bloodGroupName => throw _privateConstructorUsedError;
@@ -217,9 +224,9 @@ mixin _$PatientProfile {
   String? get emergencyPhone => throw _privateConstructorUsedError;
   @JsonKey(name: 'emergency_relation')
   String? get emergencyRelation => throw _privateConstructorUsedError;
-  @JsonKey(name: 'height_cm')
+  @JsonKey(name: 'height_cm', fromJson: _parseDouble)
   double? get heightCm => throw _privateConstructorUsedError;
-  @JsonKey(name: 'weight_kg')
+  @JsonKey(name: 'weight_kg', fromJson: _parseDouble)
   double? get weightKg => throw _privateConstructorUsedError;
   String? get allergies => throw _privateConstructorUsedError;
   @JsonKey(name: 'current_medications')
@@ -245,14 +252,14 @@ abstract class $PatientProfileCopyWith<$Res> {
   ) = _$PatientProfileCopyWithImpl<$Res, PatientProfile>;
   @useResult
   $Res call({
-    int id,
+    @JsonKey(fromJson: _parseIntRequired) int id,
     @JsonKey(name: 'full_name') String fullName,
     String phone,
     String? email,
     @JsonKey(name: 'fittoria_id') String? fittoriaId,
-    @JsonKey(name: 'gender_id') int? genderId,
+    @JsonKey(name: 'gender_id', fromJson: _parseInt) int? genderId,
     @JsonKey(name: 'gender_name') String? genderName,
-    @JsonKey(name: 'blood_group_id') int? bloodGroupId,
+    @JsonKey(name: 'blood_group_id', fromJson: _parseInt) int? bloodGroupId,
     @JsonKey(name: 'blood_group_name') String? bloodGroupName,
     @JsonKey(name: 'date_of_birth') String? dateOfBirth,
     @JsonKey(name: 'address_line1') String? addressLine1,
@@ -262,8 +269,8 @@ abstract class $PatientProfileCopyWith<$Res> {
     @JsonKey(name: 'emergency_name') String? emergencyName,
     @JsonKey(name: 'emergency_phone') String? emergencyPhone,
     @JsonKey(name: 'emergency_relation') String? emergencyRelation,
-    @JsonKey(name: 'height_cm') double? heightCm,
-    @JsonKey(name: 'weight_kg') double? weightKg,
+    @JsonKey(name: 'height_cm', fromJson: _parseDouble) double? heightCm,
+    @JsonKey(name: 'weight_kg', fromJson: _parseDouble) double? weightKg,
     String? allergies,
     @JsonKey(name: 'current_medications') String? currentMedications,
     @JsonKey(name: 'registered_at') String registeredAt,
@@ -414,14 +421,14 @@ abstract class _$$PatientProfileImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    int id,
+    @JsonKey(fromJson: _parseIntRequired) int id,
     @JsonKey(name: 'full_name') String fullName,
     String phone,
     String? email,
     @JsonKey(name: 'fittoria_id') String? fittoriaId,
-    @JsonKey(name: 'gender_id') int? genderId,
+    @JsonKey(name: 'gender_id', fromJson: _parseInt) int? genderId,
     @JsonKey(name: 'gender_name') String? genderName,
-    @JsonKey(name: 'blood_group_id') int? bloodGroupId,
+    @JsonKey(name: 'blood_group_id', fromJson: _parseInt) int? bloodGroupId,
     @JsonKey(name: 'blood_group_name') String? bloodGroupName,
     @JsonKey(name: 'date_of_birth') String? dateOfBirth,
     @JsonKey(name: 'address_line1') String? addressLine1,
@@ -431,8 +438,8 @@ abstract class _$$PatientProfileImplCopyWith<$Res>
     @JsonKey(name: 'emergency_name') String? emergencyName,
     @JsonKey(name: 'emergency_phone') String? emergencyPhone,
     @JsonKey(name: 'emergency_relation') String? emergencyRelation,
-    @JsonKey(name: 'height_cm') double? heightCm,
-    @JsonKey(name: 'weight_kg') double? weightKg,
+    @JsonKey(name: 'height_cm', fromJson: _parseDouble) double? heightCm,
+    @JsonKey(name: 'weight_kg', fromJson: _parseDouble) double? weightKg,
     String? allergies,
     @JsonKey(name: 'current_medications') String? currentMedications,
     @JsonKey(name: 'registered_at') String registeredAt,
@@ -575,14 +582,14 @@ class __$$PatientProfileImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PatientProfileImpl implements _PatientProfile {
   const _$PatientProfileImpl({
-    required this.id,
+    @JsonKey(fromJson: _parseIntRequired) required this.id,
     @JsonKey(name: 'full_name') required this.fullName,
     required this.phone,
     this.email,
     @JsonKey(name: 'fittoria_id') this.fittoriaId,
-    @JsonKey(name: 'gender_id') this.genderId,
+    @JsonKey(name: 'gender_id', fromJson: _parseInt) this.genderId,
     @JsonKey(name: 'gender_name') this.genderName,
-    @JsonKey(name: 'blood_group_id') this.bloodGroupId,
+    @JsonKey(name: 'blood_group_id', fromJson: _parseInt) this.bloodGroupId,
     @JsonKey(name: 'blood_group_name') this.bloodGroupName,
     @JsonKey(name: 'date_of_birth') this.dateOfBirth,
     @JsonKey(name: 'address_line1') this.addressLine1,
@@ -592,8 +599,8 @@ class _$PatientProfileImpl implements _PatientProfile {
     @JsonKey(name: 'emergency_name') this.emergencyName,
     @JsonKey(name: 'emergency_phone') this.emergencyPhone,
     @JsonKey(name: 'emergency_relation') this.emergencyRelation,
-    @JsonKey(name: 'height_cm') this.heightCm,
-    @JsonKey(name: 'weight_kg') this.weightKg,
+    @JsonKey(name: 'height_cm', fromJson: _parseDouble) this.heightCm,
+    @JsonKey(name: 'weight_kg', fromJson: _parseDouble) this.weightKg,
     this.allergies,
     @JsonKey(name: 'current_medications') this.currentMedications,
     @JsonKey(name: 'registered_at') required this.registeredAt,
@@ -603,6 +610,7 @@ class _$PatientProfileImpl implements _PatientProfile {
       _$$PatientProfileImplFromJson(json);
 
   @override
+  @JsonKey(fromJson: _parseIntRequired)
   final int id;
   @override
   @JsonKey(name: 'full_name')
@@ -615,13 +623,13 @@ class _$PatientProfileImpl implements _PatientProfile {
   @JsonKey(name: 'fittoria_id')
   final String? fittoriaId;
   @override
-  @JsonKey(name: 'gender_id')
+  @JsonKey(name: 'gender_id', fromJson: _parseInt)
   final int? genderId;
   @override
   @JsonKey(name: 'gender_name')
   final String? genderName;
   @override
-  @JsonKey(name: 'blood_group_id')
+  @JsonKey(name: 'blood_group_id', fromJson: _parseInt)
   final int? bloodGroupId;
   @override
   @JsonKey(name: 'blood_group_name')
@@ -648,10 +656,10 @@ class _$PatientProfileImpl implements _PatientProfile {
   @JsonKey(name: 'emergency_relation')
   final String? emergencyRelation;
   @override
-  @JsonKey(name: 'height_cm')
+  @JsonKey(name: 'height_cm', fromJson: _parseDouble)
   final double? heightCm;
   @override
-  @JsonKey(name: 'weight_kg')
+  @JsonKey(name: 'weight_kg', fromJson: _parseDouble)
   final double? weightKg;
   @override
   final String? allergies;
@@ -759,14 +767,15 @@ class _$PatientProfileImpl implements _PatientProfile {
 
 abstract class _PatientProfile implements PatientProfile {
   const factory _PatientProfile({
-    required final int id,
+    @JsonKey(fromJson: _parseIntRequired) required final int id,
     @JsonKey(name: 'full_name') required final String fullName,
     required final String phone,
     final String? email,
     @JsonKey(name: 'fittoria_id') final String? fittoriaId,
-    @JsonKey(name: 'gender_id') final int? genderId,
+    @JsonKey(name: 'gender_id', fromJson: _parseInt) final int? genderId,
     @JsonKey(name: 'gender_name') final String? genderName,
-    @JsonKey(name: 'blood_group_id') final int? bloodGroupId,
+    @JsonKey(name: 'blood_group_id', fromJson: _parseInt)
+    final int? bloodGroupId,
     @JsonKey(name: 'blood_group_name') final String? bloodGroupName,
     @JsonKey(name: 'date_of_birth') final String? dateOfBirth,
     @JsonKey(name: 'address_line1') final String? addressLine1,
@@ -776,8 +785,8 @@ abstract class _PatientProfile implements PatientProfile {
     @JsonKey(name: 'emergency_name') final String? emergencyName,
     @JsonKey(name: 'emergency_phone') final String? emergencyPhone,
     @JsonKey(name: 'emergency_relation') final String? emergencyRelation,
-    @JsonKey(name: 'height_cm') final double? heightCm,
-    @JsonKey(name: 'weight_kg') final double? weightKg,
+    @JsonKey(name: 'height_cm', fromJson: _parseDouble) final double? heightCm,
+    @JsonKey(name: 'weight_kg', fromJson: _parseDouble) final double? weightKg,
     final String? allergies,
     @JsonKey(name: 'current_medications') final String? currentMedications,
     @JsonKey(name: 'registered_at') required final String registeredAt,
@@ -787,6 +796,7 @@ abstract class _PatientProfile implements PatientProfile {
       _$PatientProfileImpl.fromJson;
 
   @override
+  @JsonKey(fromJson: _parseIntRequired)
   int get id;
   @override
   @JsonKey(name: 'full_name')
@@ -799,13 +809,13 @@ abstract class _PatientProfile implements PatientProfile {
   @JsonKey(name: 'fittoria_id')
   String? get fittoriaId;
   @override
-  @JsonKey(name: 'gender_id')
+  @JsonKey(name: 'gender_id', fromJson: _parseInt)
   int? get genderId;
   @override
   @JsonKey(name: 'gender_name')
   String? get genderName;
   @override
-  @JsonKey(name: 'blood_group_id')
+  @JsonKey(name: 'blood_group_id', fromJson: _parseInt)
   int? get bloodGroupId;
   @override
   @JsonKey(name: 'blood_group_name')
@@ -832,10 +842,10 @@ abstract class _PatientProfile implements PatientProfile {
   @JsonKey(name: 'emergency_relation')
   String? get emergencyRelation;
   @override
-  @JsonKey(name: 'height_cm')
+  @JsonKey(name: 'height_cm', fromJson: _parseDouble)
   double? get heightCm;
   @override
-  @JsonKey(name: 'weight_kg')
+  @JsonKey(name: 'weight_kg', fromJson: _parseDouble)
   double? get weightKg;
   @override
   String? get allergies;

@@ -5,10 +5,31 @@ import 'records.dart'; // for MedicalHistoryItem
 part 'profile_models.freezed.dart';
 part 'profile_models.g.dart';
 
+double? _parseDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value);
+  return null;
+}
+
+int? _parseInt(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value);
+  return null;
+}
+
+int _parseIntRequired(dynamic value) {
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value) ?? 0;
+  return 0;
+}
+
+
 @freezed
 class LookupItem with _$LookupItem {
   const factory LookupItem({
-    required int id,
+    @JsonKey(fromJson: _parseIntRequired) required int id,
     required String name,
   }) = _LookupItem;
 
@@ -19,14 +40,14 @@ class LookupItem with _$LookupItem {
 @freezed
 class PatientProfile with _$PatientProfile {
   const factory PatientProfile({
-    required int id,
+    @JsonKey(fromJson: _parseIntRequired) required int id,
     @JsonKey(name: 'full_name') required String fullName,
     required String phone,
     String? email,
     @JsonKey(name: 'fittoria_id') String? fittoriaId,
-    @JsonKey(name: 'gender_id') int? genderId,
+    @JsonKey(name: 'gender_id', fromJson: _parseInt) int? genderId,
     @JsonKey(name: 'gender_name') String? genderName,
-    @JsonKey(name: 'blood_group_id') int? bloodGroupId,
+    @JsonKey(name: 'blood_group_id', fromJson: _parseInt) int? bloodGroupId,
     @JsonKey(name: 'blood_group_name') String? bloodGroupName,
     @JsonKey(name: 'date_of_birth') String? dateOfBirth,
     @JsonKey(name: 'address_line1') String? addressLine1,
@@ -36,8 +57,8 @@ class PatientProfile with _$PatientProfile {
     @JsonKey(name: 'emergency_name') String? emergencyName,
     @JsonKey(name: 'emergency_phone') String? emergencyPhone,
     @JsonKey(name: 'emergency_relation') String? emergencyRelation,
-    @JsonKey(name: 'height_cm') double? heightCm,
-    @JsonKey(name: 'weight_kg') double? weightKg,
+    @JsonKey(name: 'height_cm', fromJson: _parseDouble) double? heightCm,
+    @JsonKey(name: 'weight_kg', fromJson: _parseDouble) double? weightKg,
     String? allergies,
     @JsonKey(name: 'current_medications') String? currentMedications,
     @JsonKey(name: 'registered_at') required String registeredAt,

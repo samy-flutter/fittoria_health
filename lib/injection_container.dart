@@ -61,8 +61,84 @@ import 'features/prescriptions/domain/repositories/prescriptions_repository.dart
 import 'features/prescriptions/data/repositories/prescriptions_repository_impl.dart';
 import 'features/prescriptions/presentation/bloc/prescriptions_cubit.dart';
 
+import 'features/reports/data/data_sources/reports_remote_data_source.dart';
+import 'features/reports/data/repositories/reports_repository_impl.dart';
+import 'features/reports/domain/repositories/reports_repository.dart';
+import 'features/reports/presentation/bloc/reports_cubit.dart';
+
+import 'features/care/data/data_sources/care_remote_data_source.dart';
+import 'features/care/data/repositories/care_repository_impl.dart';
+import 'features/care/domain/repositories/care_repository.dart';
+import 'features/care/presentation/cubit/gym_cubit.dart';
+import 'features/care/presentation/cubit/fitness_details_cubit.dart';
+import 'features/care/presentation/cubit/nutrition_details_cubit.dart';
+import 'features/care/presentation/cubit/meetings_cubit.dart';
+
 // Features - Dashboard
 import 'features/dashboard/presentation/cubit/dashboard_cubit.dart';
+
+// Features - Fitness
+import 'features/fit/data/data_sources/fitness_remote_data_source.dart';
+import 'features/fit/domain/repositories/fitness_repository.dart';
+import 'features/fit/data/repositories/fitness_repository_impl.dart';
+import 'features/fit/presentation/cubit/devices_cubit.dart';
+import 'features/fit/presentation/cubit/goals_cubit.dart';
+import 'features/fit/presentation/cubit/challenges_cubit.dart';
+import 'features/fit/presentation/cubit/body_progress_cubit.dart';
+import 'features/fit/presentation/cubit/workouts_cubit.dart';
+
+// Features - Community
+import 'features/community/data/data_sources/social_remote_data_source.dart';
+import 'features/community/domain/repositories/social_repository.dart';
+import 'features/community/data/repositories/social_repository_impl.dart';
+import 'features/community/presentation/cubit/social_cubit.dart';
+import 'features/community/presentation/cubit/social_comments_cubit.dart';
+import 'features/community/data/data_sources/clubs_remote_data_source.dart';
+import 'features/community/domain/repositories/clubs_repository.dart';
+import 'features/community/data/repositories/clubs_repository_impl.dart';
+import 'features/community/presentation/cubit/clubs_cubit.dart';
+// Features - Events
+import 'features/events/data/data_sources/events_remote_data_source.dart';
+import 'features/events/domain/repositories/events_repository.dart';
+import 'features/events/data/repositories/events_repository_impl.dart';
+import 'features/events/presentation/cubit/events_cubit.dart';
+
+// Features - Trainers
+import 'features/trainers/domain/repositories/trainers_repository.dart';
+import 'features/trainers/data/repositories/trainers_repository_impl.dart';
+import 'features/trainers/presentation/cubit/trainers_cubit.dart';
+
+// Features - AI Nutrition
+import 'features/ai_nutrition/domain/repositories/ai_nutrition_repository.dart';
+import 'features/ai_nutrition/data/repositories/ai_nutrition_repository_impl.dart';
+import 'features/ai_nutrition/presentation/cubit/ai_nutrition_cubit.dart';
+
+// Features - Achievements
+import 'features/achievements/data/data_sources/achievements_remote_data_source.dart';
+import 'features/achievements/domain/repositories/achievements_repository.dart';
+import 'features/achievements/data/repositories/achievements_repository_impl.dart';
+import 'features/achievements/presentation/cubit/achievements_cubit.dart';
+
+// Features - Lab Booking
+import 'features/lab_booking/domain/repositories/lab_booking_repository.dart';
+import 'features/lab_booking/data/repositories/lab_booking_repository_impl.dart';
+import 'features/lab_booking/presentation/cubit/lab_booking_cubit.dart';
+
+// Features - Shop
+import 'features/shop/domain/repositories/shop_repository.dart';
+import 'features/shop/data/repositories/shop_repository_impl.dart';
+import 'features/shop/presentation/cubit/shop_cubit.dart';
+
+// Features - Academy
+import 'features/academy/data/data_sources/academy_remote_data_source.dart';
+import 'features/academy/domain/repositories/academy_repository.dart';
+import 'features/academy/data/repositories/academy_repository_impl.dart';
+import 'features/academy/presentation/cubit/academy_cubit.dart';
+import 'features/fit/domain/repositories/fit_repository.dart';
+import 'features/fit/data/repositories/fit_repository_impl.dart';
+import 'features/fit/presentation/cubit/activity_cubit.dart';
+import 'features/fit/presentation/cubit/heart_rate_cubit.dart';
+import 'features/fit/presentation/cubit/sleep_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -127,16 +203,88 @@ Future<void> init() async {
   sl.registerFactory(() => RecordsCubit(sl()));
   sl.registerFactory(() => ProfileCubit(sl()));
 
+  // Fit Hub
+  sl.registerFactory(() => DevicesCubit(sl()));
+  sl.registerFactory(() => GoalsCubit(sl()));
+  sl.registerFactory(() => ChallengesCubit(sl()));
+  sl.registerFactory(() => BodyProgressCubit(sl()));
+  sl.registerFactory(() => WorkoutsCubit(sl()));
+
   // Invoices
   sl.registerLazySingleton<InvoicesRemoteDataSource>(() => InvoicesRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<InvoicesRepository>(() => InvoicesRepositoryImpl(sl()));
   sl.registerFactory(() => InvoicesCubit(sl()));
 
   // Prescriptions
-  sl.registerLazySingleton<PrescriptionsRemoteDataSource>(() => PrescriptionsRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<PrescriptionsRepository>(() => PrescriptionsRepositoryImpl(sl()));
-  sl.registerFactory(() => PrescriptionsCubit(sl()));
+  sl.registerLazySingleton<PrescriptionsRemoteDataSource>(
+      () => PrescriptionsRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<ReportsRemoteDataSource>(
+      () => ReportsRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<CareRemoteDataSource>(
+      () => CareRemoteDataSourceImpl(sl()));
 
-  // Dashboard — receives profile, appointments, invoices, clinics repositories
-  sl.registerFactory(() => DashboardCubit(sl(), sl(), sl(), sl()));
+  // Repositories
+  sl.registerLazySingleton<PrescriptionsRepository>(() => PrescriptionsRepositoryImpl(sl()));
+  sl.registerLazySingleton<ReportsRepository>(() => ReportsRepositoryImpl(sl()));
+  sl.registerLazySingleton<CareRepository>(() => CareRepositoryImpl(sl()));
+  sl.registerFactory(() => PrescriptionsCubit(sl()));
+  sl.registerFactory(() => ReportsCubit(sl()));
+  sl.registerFactory(() => GymCubit(sl()));
+  sl.registerFactory(() => FitnessDetailsCubit(sl()));
+  sl.registerFactory(() => NutritionDetailsCubit(sl()));
+  sl.registerFactory(() => MeetingsCubit(sl()));
+
+  // Data Sources
+  sl.registerLazySingleton<FitnessRemoteDataSource>(() => FitnessRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<FitnessRepository>(() => FitnessRepositoryImpl(sl()));
+
+  // Dashboard — receives profile, appointments, fitness repositories
+  sl.registerFactory(() => DashboardCubit(sl(), sl(), sl()));
+
+  // Community  // Social / Community
+  sl.registerLazySingleton<SocialRemoteDataSource>(() => SocialRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<SocialRepository>(() => SocialRepositoryImpl(sl()));
+  sl.registerFactory(() => SocialCubit(sl()));
+  sl.registerFactory(() => SocialCommentsCubit(sl()));
+
+  sl.registerLazySingleton<ClubsRemoteDataSource>(() => ClubsRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<ClubsRepository>(() => ClubsRepositoryImpl(sl()));
+  sl.registerFactory(() => ClubsCubit(sl()));
+
+  // Events
+  sl.registerLazySingleton<EventsRemoteDataSource>(() => EventsRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<EventsRepository>(() => EventsRepositoryImpl(sl()));
+  sl.registerFactory(() => EventsCubit(sl()));
+
+  // Trainers
+  sl.registerLazySingleton<TrainersRepository>(() => TrainersRepositoryImpl());
+  sl.registerFactory(() => TrainersCubit(sl()));
+
+  // AI Nutrition
+  sl.registerLazySingleton<AiNutritionRepository>(() => AiNutritionRepositoryImpl());
+  sl.registerFactory(() => AiNutritionCubit(sl()));
+
+  // Achievements
+  sl.registerLazySingleton<AchievementsRemoteDataSource>(() => AchievementsRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<AchievementsRepository>(() => AchievementsRepositoryImpl(sl()));
+  sl.registerFactory(() => AchievementsCubit(sl()));
+
+  // Lab Booking
+  sl.registerLazySingleton<LabBookingRepository>(() => LabBookingRepositoryImpl());
+  sl.registerFactory(() => LabBookingCubit(sl()));
+
+  // Shop
+  sl.registerLazySingleton<ShopRepository>(() => ShopRepositoryImpl());
+  sl.registerFactory(() => ShopCubit(sl()));
+
+  // Academy
+  sl.registerLazySingleton<AcademyRemoteDataSource>(() => AcademyRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<AcademyRepository>(() => AcademyRepositoryImpl(sl()));
+  sl.registerFactory(() => AcademyCubit(repository: sl(), audience: 'patient'));
+
+  // Fit
+  sl.registerLazySingleton<FitRepository>(() => FitRepositoryImpl());
+  sl.registerFactory(() => ActivityCubit(sl()));
+  sl.registerFactory(() => HeartRateCubit(sl()));
+  sl.registerFactory(() => SleepCubit(sl()));
 }

@@ -15,79 +15,83 @@ class LabReferralsBloc extends Bloc<LabReferralsEvent, LabReferralsState> {
 
   Future<void> _onLoadLabReferrals(LoadLabReferrals event, Emitter<LabReferralsState> emit) async {
     emit(state.copyWith(isLoading: true, errorMessage: () => null, successMessage: () => null));
-    try {
-      final response = await _repository.getLabReferrals();
-      emit(state.copyWith(
+    
+    final result = await _repository.getLabReferrals();
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isLoading: false,
+        errorMessage: () => failure.message,
+      )),
+      (response) => emit(state.copyWith(
         referrals: response.referrals,
         notifications: response.notifications,
         isLoading: false,
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: () => e.toString(),
-      ));
-    }
+      )),
+    );
   }
 
   Future<void> _onLoadLabReferralDetails(LoadLabReferralDetails event, Emitter<LabReferralsState> emit) async {
     emit(state.copyWith(isLoading: true, errorMessage: () => null, successMessage: () => null));
-    try {
-      final response = await _repository.getLabReferralDetails(event.referralId);
-      emit(state.copyWith(
+    
+    final result = await _repository.getLabReferralDetails(event.referralId);
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isLoading: false,
+        errorMessage: () => failure.message,
+      )),
+      (response) => emit(state.copyWith(
         selectedReferral: () => response.referral,
         notifications: response.notifications,
         isLoading: false,
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: () => e.toString(),
-      ));
-    }
+      )),
+    );
   }
 
   Future<void> _onConfirmReferralBooking(ConfirmReferralBooking event, Emitter<LabReferralsState> emit) async {
     emit(state.copyWith(isActing: true, errorMessage: () => null, successMessage: () => null));
-    try {
-      await _repository.confirmLabReferral(event.referralId);
-      emit(state.copyWith(
+    
+    final result = await _repository.confirmLabReferral(event.referralId);
+    result.fold(
+      (failure) => emit(state.copyWith(
         isActing: false,
-        successMessage: () => 'Booking confirmed!',
-      ));
-      // Reload details/list depending on what is active
-      if (state.selectedReferral?.id == event.referralId) {
-        add(LoadLabReferralDetails(event.referralId));
-      } else {
-        add(const LoadLabReferrals());
-      }
-    } catch (e) {
-      emit(state.copyWith(
-        isActing: false,
-        errorMessage: () => e.toString(),
-      ));
-    }
+        errorMessage: () => failure.message,
+      )),
+      (_) {
+        emit(state.copyWith(
+          isActing: false,
+          successMessage: () => 'Booking confirmed!',
+        ));
+        // Reload details/list depending on what is active
+        if (state.selectedReferral?.id == event.referralId) {
+          add(LoadLabReferralDetails(event.referralId));
+        } else {
+          add(const LoadLabReferrals());
+        }
+      },
+    );
   }
 
   Future<void> _onCancelReferralBooking(CancelReferralBooking event, Emitter<LabReferralsState> emit) async {
     emit(state.copyWith(isActing: true, errorMessage: () => null, successMessage: () => null));
-    try {
-      await _repository.cancelLabReferral(event.referralId);
-      emit(state.copyWith(
+    
+    final result = await _repository.cancelLabReferral(event.referralId);
+    result.fold(
+      (failure) => emit(state.copyWith(
         isActing: false,
-        successMessage: () => 'Referral cancelled!',
-      ));
-      // Reload details/list depending on what is active
-      if (state.selectedReferral?.id == event.referralId) {
-        add(LoadLabReferralDetails(event.referralId));
-      } else {
-        add(const LoadLabReferrals());
-      }
-    } catch (e) {
-      emit(state.copyWith(
-        isActing: false,
-        errorMessage: () => e.toString(),
-      ));
-    }
+        errorMessage: () => failure.message,
+      )),
+      (_) {
+        emit(state.copyWith(
+          isActing: false,
+          successMessage: () => 'Referral cancelled!',
+        ));
+        // Reload details/list depending on what is active
+        if (state.selectedReferral?.id == event.referralId) {
+          add(LoadLabReferralDetails(event.referralId));
+        } else {
+          add(const LoadLabReferrals());
+        }
+      },
+    );
   }
 }

@@ -9,11 +9,11 @@ class LabReportsCubit extends Cubit<LabReportsState> {
 
   Future<void> loadLabReports() async {
     emit(const LabReportsLoading());
-    try {
-      final reports = await _repository.getLabReports();
-      emit(LabReportsLoaded(reports));
-    } catch (e) {
-      emit(LabReportsError(e.toString()));
-    }
+    
+    final result = await _repository.getLabReports();
+    result.fold(
+      (failure) => emit(LabReportsError(failure.message)),
+      (reports) => emit(LabReportsLoaded(reports)),
+    );
   }
 }

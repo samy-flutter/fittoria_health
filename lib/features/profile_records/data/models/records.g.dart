@@ -9,14 +9,14 @@ part of 'records.dart';
 _$PatientRecordProfileImpl _$$PatientRecordProfileImplFromJson(
   Map<String, dynamic> json,
 ) => _$PatientRecordProfileImpl(
-  id: (json['id'] as num).toInt(),
+  id: _parseIntRequired(json['id']),
   fullName: json['full_name'] as String,
   allergies: json['allergies'] as String?,
   currentMedications: json['current_medications'] as String?,
-  bloodGroupId: (json['blood_group_id'] as num?)?.toInt(),
+  bloodGroupId: _parseInt(json['blood_group_id']),
   bloodGroupName: json['blood_group_name'] as String?,
-  heightCm: (json['height_cm'] as num?)?.toDouble(),
-  weightKg: (json['weight_kg'] as num?)?.toDouble(),
+  heightCm: _parseDouble(json['height_cm']),
+  weightKg: _parseDouble(json['weight_kg']),
 );
 
 Map<String, dynamic> _$$PatientRecordProfileImplToJson(
@@ -34,19 +34,19 @@ Map<String, dynamic> _$$PatientRecordProfileImplToJson(
 
 _$CaseSheetImpl _$$CaseSheetImplFromJson(Map<String, dynamic> json) =>
     _$CaseSheetImpl(
-      id: (json['id'] as num).toInt(),
+      id: _parseIntRequired(json['id']),
       chiefComplaint: json['chief_complaint'] as String?,
       historyOfIllness: json['history_of_illness'] as String?,
       diagnosis: json['diagnosis'] as String?,
       plan: json['plan'] as String?,
-      bpSystolic: (json['bp_systolic'] as num?)?.toDouble(),
-      bpDiastolic: (json['bp_diastolic'] as num?)?.toDouble(),
-      pulseBpm: (json['pulse_bpm'] as num?)?.toDouble(),
-      temperatureF: (json['temperature_f'] as num?)?.toDouble(),
-      spo2Percent: (json['spo2_percent'] as num?)?.toDouble(),
-      weightKg: (json['weight_kg'] as num?)?.toDouble(),
-      heightCm: (json['height_cm'] as num?)?.toDouble(),
-      bmi: (json['bmi'] as num?)?.toDouble(),
+      bpSystolic: _parseDouble(json['bp_systolic']),
+      bpDiastolic: _parseDouble(json['bp_diastolic']),
+      pulseBpm: _parseDouble(json['pulse_bpm']),
+      temperatureF: _parseDouble(json['temperature_f']),
+      spo2Percent: _parseDouble(json['spo2_percent']),
+      weightKg: _parseDouble(json['weight_kg']),
+      heightCm: _parseDouble(json['height_cm']),
+      bmi: _parseDouble(json['bmi']),
       generalExamination: json['general_examination'] as String?,
       systemicExamination: json['systemic_examination'] as String?,
       followUpDate: json['follow_up_date'] as String?,
@@ -83,7 +83,7 @@ Map<String, dynamic> _$$CaseSheetImplToJson(_$CaseSheetImpl instance) =>
 _$MedicalHistoryItemImpl _$$MedicalHistoryItemImplFromJson(
   Map<String, dynamic> json,
 ) => _$MedicalHistoryItemImpl(
-  id: (json['id'] as num).toInt(),
+  id: _parseIntRequired(json['id']),
   conditionName: json['condition_name'] as String,
   diagnosedAt: json['diagnosed_at'] as String?,
   notes: json['notes'] as String?,

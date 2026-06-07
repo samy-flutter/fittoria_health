@@ -8,7 +8,7 @@ part of 'profile_models.dart';
 
 _$LookupItemImpl _$$LookupItemImplFromJson(Map<String, dynamic> json) =>
     _$LookupItemImpl(
-      id: (json['id'] as num).toInt(),
+      id: _parseIntRequired(json['id']),
       name: json['name'] as String,
     );
 
@@ -17,14 +17,14 @@ Map<String, dynamic> _$$LookupItemImplToJson(_$LookupItemImpl instance) =>
 
 _$PatientProfileImpl _$$PatientProfileImplFromJson(Map<String, dynamic> json) =>
     _$PatientProfileImpl(
-      id: (json['id'] as num).toInt(),
+      id: _parseIntRequired(json['id']),
       fullName: json['full_name'] as String,
       phone: json['phone'] as String,
       email: json['email'] as String?,
       fittoriaId: json['fittoria_id'] as String?,
-      genderId: (json['gender_id'] as num?)?.toInt(),
+      genderId: _parseInt(json['gender_id']),
       genderName: json['gender_name'] as String?,
-      bloodGroupId: (json['blood_group_id'] as num?)?.toInt(),
+      bloodGroupId: _parseInt(json['blood_group_id']),
       bloodGroupName: json['blood_group_name'] as String?,
       dateOfBirth: json['date_of_birth'] as String?,
       addressLine1: json['address_line1'] as String?,
@@ -34,8 +34,8 @@ _$PatientProfileImpl _$$PatientProfileImplFromJson(Map<String, dynamic> json) =>
       emergencyName: json['emergency_name'] as String?,
       emergencyPhone: json['emergency_phone'] as String?,
       emergencyRelation: json['emergency_relation'] as String?,
-      heightCm: (json['height_cm'] as num?)?.toDouble(),
-      weightKg: (json['weight_kg'] as num?)?.toDouble(),
+      heightCm: _parseDouble(json['height_cm']),
+      weightKg: _parseDouble(json['weight_kg']),
       allergies: json['allergies'] as String?,
       currentMedications: json['current_medications'] as String?,
       registeredAt: json['registered_at'] as String,

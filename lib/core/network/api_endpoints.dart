@@ -3,7 +3,7 @@ class ApiEndpoints {
 
   // static const String baseUrl = 'https://crm.fittoria.com'; // Change to correct API url if needed
   // Use 10.0.2.2 for Android Emulator, or your machine's IP (e.g. 192.168.1.x) for physical devices.
-  static const String baseUrl = 'http://10.186.164.57:3000';
+  static const String baseUrl = 'https://www.fittoria.in';
 
   // Auth endpoints
   static const String login = '/api/v2/auth/mobile/login';
@@ -14,6 +14,7 @@ class ApiEndpoints {
 
   // Patient endpoints
   static const String profile = '/api/patient/profile';
+  static const String onboarding = '/api/patient/onboarding';
   static const String appointments = '/api/patient/appointments';
   static const String clinics = '/api/patient/clinics';
   static const String invoices = '/api/patient/invoices';

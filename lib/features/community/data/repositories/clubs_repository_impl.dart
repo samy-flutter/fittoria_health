@@ -33,4 +33,27 @@ class ClubsRepositoryImpl implements ClubsRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+  @override
+  Future<Either<Failure, List<ClubChatMessage>>> getClubChat(int clubId, {int after = 0}) async {
+    try {
+      final messages = await _remoteDataSource.getClubChat(clubId, after: after);
+      return Right(messages);
+    } on ApiException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> sendChatMessage(int clubId, String body) async {
+    try {
+      await _remoteDataSource.sendChatMessage(clubId, body);
+      return const Right(null);
+    } on ApiException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

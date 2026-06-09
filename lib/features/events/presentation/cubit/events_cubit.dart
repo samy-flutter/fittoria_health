@@ -15,4 +15,24 @@ class EventsCubit extends Cubit<EventsState> {
       (events) => emit(EventsLoaded(events: events, filter: filter)),
     );
   }
+
+  Future<void> registerForEvent(int eventId) async {
+    // If we're already loaded, keep track of current state
+    final currentState = state;
+    String currentFilter = '';
+    if (currentState is EventsLoaded) {
+      currentFilter = currentState.filter;
+    }
+
+    // Call API
+    final result = await _repository.registerForEvent(eventId);
+    
+    // Refresh list if success
+    result.fold(
+      (failure) => null, // We could emit a failure state if needed, but for now we just silently fail or we could show a toast from UI using a specific state. Let's just reload on success.
+      (_) {
+        loadEvents(filter: currentFilter);
+      },
+    );
+  }
 }

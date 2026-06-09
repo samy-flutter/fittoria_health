@@ -25,6 +25,8 @@ import '../features/shell/presentation/screens/patient_shell_screen.dart';
 import '../features/fit/presentation/screens/fitness_hub_screen.dart';
 import '../features/care/presentation/screens/care_hub_screen.dart';
 import '../features/events/presentation/screens/events_screen.dart';
+import '../features/events/presentation/screens/event_details_screen.dart';
+import '../features/events/data/models/event_models.dart';
 import '../features/trainers/presentation/screens/trainers_screen.dart';
 import '../features/ai_nutrition/presentation/screens/ai_nutrition_screen.dart';
 import '../features/achievements/presentation/screens/achievements_screen.dart';
@@ -34,6 +36,7 @@ import '../features/academy/presentation/screens/academy_screen.dart';
 import '../features/community/presentation/screens/community_hub_screen.dart';
 import '../features/community/presentation/screens/social_screen.dart';
 import '../features/community/presentation/screens/clubs_screen.dart';
+import '../features/community/presentation/screens/club_chat_screen.dart';
 import '../features/more/presentation/screens/more_hub_screen.dart';
 import '../features/fit/presentation/screens/log_data_screen.dart';
 import '../features/fit/presentation/screens/activity_screen.dart';
@@ -276,9 +279,29 @@ class AppRouter {
         builder: (context, state) => const ClubsScreen(),
       ),
       GoRoute(
+        path: RouteNames.patientClubChat,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final clubId = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+          final clubName = state.uri.queryParameters['name'] ?? 'Club Chat';
+          return ClubChatScreen(clubId: clubId, clubName: clubName);
+        },
+      ),
+      GoRoute(
         path: RouteNames.patientEvents,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const EventsScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.patientEventDetails,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final event = state.extra as FitEvent?;
+          if (event == null) {
+            return const Scaffold(body: Center(child: Text('Event details not available.')));
+          }
+          return EventDetailsScreen(event: event);
+        },
       ),
       GoRoute(
         path: RouteNames.patientTrainers,

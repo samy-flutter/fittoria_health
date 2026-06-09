@@ -97,6 +97,7 @@ import 'features/community/data/data_sources/clubs_remote_data_source.dart';
 import 'features/community/domain/repositories/clubs_repository.dart';
 import 'features/community/data/repositories/clubs_repository_impl.dart';
 import 'features/community/presentation/cubit/clubs_cubit.dart';
+import 'features/community/presentation/cubit/club_chat_cubit.dart';
 // Features - Events
 import 'features/events/data/data_sources/events_remote_data_source.dart';
 import 'features/events/domain/repositories/events_repository.dart';
@@ -250,6 +251,7 @@ Future<void> init() async {
   sl.registerLazySingleton<ClubsRemoteDataSource>(() => ClubsRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<ClubsRepository>(() => ClubsRepositoryImpl(sl()));
   sl.registerFactory(() => ClubsCubit(sl()));
+  sl.registerFactory(() => ClubChatCubit(sl()));
 
   // Events
   sl.registerLazySingleton<EventsRemoteDataSource>(() => EventsRemoteDataSourceImpl(sl()));

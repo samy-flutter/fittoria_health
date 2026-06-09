@@ -26,7 +26,9 @@ class RouteNames {
   static const String patientLabBooking = '/patient/lab-booking';
   static const String patientSocial = '/patient/social';
   static const String patientClubs = '/patient/clubs';
+  static const String patientClubChat = '/patient/clubs/:id/chat';
   static const String patientEvents = '/patient/events';
+  static const String patientEventDetails = '/patient/events/details';
   static const String patientChallenges = '/patient/fit/challenges';
   static const String patientAcademy = '/patient/academy';
   static const String patientShop = '/patient/shop';

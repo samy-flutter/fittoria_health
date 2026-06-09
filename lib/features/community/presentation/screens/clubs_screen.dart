@@ -216,26 +216,60 @@ class _ClubCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: club.joined ? (isDark ? AppColors.darkBgBase : AppColors.lightBgBase) : AppColors.fitOrange,
-                      foregroundColor: club.joined ? (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary) : Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: AppRadius.borderLg,
-                        side: club.joined ? BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder) : BorderSide.none,
+                if (club.joined)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.fitOrange,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onPressed: () {
+                            // Navigate to chat
+                            context.push('/patient/clubs/${club.id}/chat?name=${Uri.encodeComponent(club.name)}');
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(LucideIcons.messageCircle, size: 18),
+                              const SizedBox(width: 8),
+                              Text('Go to Chat', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    onPressed: () => context.read<ClubsCubit>().toggleMembership(club.id),
-                    child: Text(
-                      club.joined ? 'Leave Club' : 'Join Club',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                      const SizedBox(width: 12),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                          side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                          shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        ),
+                        onPressed: () => context.read<ClubsCubit>().toggleMembership(club.id),
+                        child: const Icon(LucideIcons.logOut, size: 18),
+                      ),
+                    ],
+                  )
+                else
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.fitOrange,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      onPressed: () => context.read<ClubsCubit>().toggleMembership(club.id),
+                      child: Text('Join Club', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
                     ),
                   ),
-                ),
               ],
             ),
           ),

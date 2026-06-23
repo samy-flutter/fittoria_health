@@ -8,6 +8,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../injection_container.dart';
 import '../cubit/nutrition_details_cubit.dart';
 import '../../data/models/nutrition_details_model.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class DietitianDetailsScreen extends StatelessWidget {
   const DietitianDetailsScreen({super.key});
@@ -29,12 +30,9 @@ class _DietitianDetailsScreenView extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('My Dietitian'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: BlocBuilder<NutritionDetailsCubit, NutritionDetailsState>(
         builder: (context, state) {
           if (state is NutritionDetailsLoading) {
@@ -211,7 +209,7 @@ class _DietitianDetailsScreenView extends StatelessWidget {
                     width: 32,
                     height: 32,
                     decoration: BoxDecoration(
-                      color: AppColors.fitOrange.withOpacity(0.1),
+                      color: AppColors.fitOrange.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(LucideIcons.utensils, size: 14, color: AppColors.fitOrange),
@@ -273,7 +271,7 @@ class _DietitianDetailsScreenView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: tracking.compliance > 80 ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+              color: tracking.compliance > 80 ? Colors.green.withValues(alpha: 0.1) : Colors.orange.withValues(alpha: 0.1),
               borderRadius: AppRadius.borderMd,
             ),
             child: Text(

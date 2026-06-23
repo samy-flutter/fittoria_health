@@ -8,6 +8,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../injection_container.dart';
 import '../cubit/gym_cubit.dart';
 import '../../data/models/gym_model.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class GymDetailsScreen extends StatelessWidget {
   const GymDetailsScreen({super.key});
@@ -29,12 +30,9 @@ class _GymDetailsScreenView extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('My Gym'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: BlocBuilder<GymCubit, GymState>(
         builder: (context, state) {
           if (state is GymLoading) {

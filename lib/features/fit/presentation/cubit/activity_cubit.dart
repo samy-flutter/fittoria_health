@@ -20,8 +20,8 @@ class ActivityCubit extends Cubit<ActivityState> {
   final FitRepository repository;
   ActivityCubit(this.repository) : super(ActivityInitial());
 
-  Future<void> load(String range) async {
-    emit(ActivityLoading());
+  Future<void> load(String range, {bool silently = false}) async {
+    if (!silently) emit(ActivityLoading());
     final result = await repository.getActivity(range: range);
     result.fold(
       (Failure f) => emit(ActivityError(f.message)),
@@ -31,6 +31,6 @@ class ActivityCubit extends Cubit<ActivityState> {
 
   Future<void> log(ActivityLog logData, String currentRange) async {
     await repository.logActivity(logData);
-    await load(currentRange);
+    await load(currentRange, silently: true);
   }
 }

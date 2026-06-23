@@ -11,6 +11,7 @@ import '../bloc/lab_referrals_bloc.dart';
 import '../bloc/lab_referrals_event.dart';
 import '../bloc/lab_referrals_state.dart';
 import '../../data/models/lab_referral.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 final Map<String, int> _statusSteps = {
   'pending_lab': 1,
@@ -69,10 +70,7 @@ class _LabReferralsBodyState extends State<_LabReferralsBody> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: CustomAppBar(
         leading: IconButton(
           icon: Icon(LucideIcons.chevronLeft,
               color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary, size: 20),
@@ -117,7 +115,6 @@ class _LabReferralsBodyState extends State<_LabReferralsBody> {
                     Expanded(child: Text(state.errorMessage!)),
                   ],
                 ),
-                backgroundColor: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -132,7 +129,6 @@ class _LabReferralsBodyState extends State<_LabReferralsBody> {
                     Expanded(child: Text(state.successMessage!)),
                   ],
                 ),
-                backgroundColor: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -191,7 +187,7 @@ class _LabReferralsBodyState extends State<_LabReferralsBody> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: state.referrals.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 16),
+                    separatorBuilder: (_, _) => const SizedBox(height: 16),
                     itemBuilder: (context, idx) {
                       final r = state.referrals[idx];
                       final isExpanded = _expandedIds.contains(r.id);
@@ -376,7 +372,6 @@ class _LabReferralsBodyState extends State<_LabReferralsBody> {
                     style: FilledButton.styleFrom(
                       backgroundColor: isDark ? AppColors.darkTeal : AppColors.lightTeal,
                       foregroundColor: Colors.white,
-                      elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
                       minimumSize: Size.zero,

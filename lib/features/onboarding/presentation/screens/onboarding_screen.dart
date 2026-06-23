@@ -1,3 +1,4 @@
+import '../../../../core/utils/ui_helpers.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -72,26 +73,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
         if (!mounted) return;
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Personalization saved! +25 Points', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-            backgroundColor: AppColors.fitOrange,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
-          ),
-        );
-      } catch (e) {
+        UIHelpers.showSuccessSnackBar(context, 'Personalization saved! +25 Points');
+} catch (e) {
         if (!mounted) return;
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save personalization', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
-          ),
-        );
-      }
+        UIHelpers.showErrorSnackBar(context, 'Failed to save personalization');
+}
     }
   }
 

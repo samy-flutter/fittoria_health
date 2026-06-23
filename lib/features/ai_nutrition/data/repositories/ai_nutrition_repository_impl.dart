@@ -1,3 +1,4 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/repositories/ai_nutrition_repository.dart';
@@ -24,7 +25,7 @@ class AiNutritionRepositoryImpl implements AiNutritionRepository {
       await Future.delayed(const Duration(milliseconds: 600));
       return Right(List.from(_mockLogs));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 
@@ -46,7 +47,7 @@ class AiNutritionRepositoryImpl implements AiNutritionRepository {
       _mockLogs.insert(0, newLog);
       return Right(newLog);
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 }

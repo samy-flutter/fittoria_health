@@ -1,3 +1,4 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../domain/repositories/invoices_repository.dart';
@@ -14,7 +15,7 @@ class InvoicesCubit extends Cubit<InvoicesState> {
       final invoices = await _repository.getInvoices();
       emit(InvoicesLoaded(invoices: invoices));
     } catch (e) {
-      emit(InvoicesError(e.toString()));
+      emit(InvoicesError(ExceptionHandler.handle(e).message));
     }
   }
 
@@ -53,7 +54,7 @@ class InvoicesCubit extends Cubit<InvoicesState> {
     } catch (e) {
       emit((state as InvoicesLoaded).copyWith(
         clearPdfLoading: true,
-        errorMessage: e.toString(),
+        errorMessage: ExceptionHandler.handle(e).message,
       ));
     }
   }

@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../cubit/heart_rate_cubit.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
+import '../../data/models/fit_models.dart';
 
 class HeartRateScreen extends StatefulWidget {
   const HeartRateScreen({super.key});
@@ -24,16 +26,13 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     const accentColor = Color(0xFFEF4444);
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Heart Rate'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: BlocBuilder<HeartRateCubit, HeartRateState>(
         builder: (context, state) {
           if (state is HeartRateInitial || state is HeartRateLoading) {
@@ -48,7 +47,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
 
             return RefreshIndicator(
               color: accentColor,
-              onRefresh: () => context.read<HeartRateCubit>().load(),
+              onRefresh: () => context.read<HeartRateCubit>().load(silently: true),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -129,7 +128,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
     );
   }
 
-  Widget _buildStatsGrid(stats, bool isDark) {
+  Widget _buildStatsGrid(HeartRateStats stats, bool isDark) {
     return GridView.count(
       crossAxisCount: 3,
       crossAxisSpacing: 12,
@@ -203,7 +202,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: accentColor.withOpacity(0.15),
+                        color: accentColor.withValues(alpha: 0.15),
                       ),
                     ),
                   ],
@@ -287,7 +286,7 @@ class _MetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -301,7 +300,7 @@ class _MetricCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: AppRadius.borderLg,
             ),
             child: Icon(icon, color: color, size: 14),

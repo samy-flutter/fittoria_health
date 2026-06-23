@@ -1,3 +1,4 @@
+import '../../../../core/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,7 @@ import '../bloc/lab_referrals_bloc.dart';
 import '../bloc/lab_referrals_event.dart';
 import '../bloc/lab_referrals_state.dart';
 import '../../data/models/lab_referral.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 final List<Map<String, String>> _statusSteps = [
   {'key': 'pending_lab', 'label': 'Requested'},
@@ -67,15 +69,7 @@ class _LabReferralDetailsBody extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary, size: 20),
-          onPressed: () => context.pop(),
-        ),
+      appBar: CustomAppBar(
         title: Text(
           'Referral Details',
           style: AppTextStyles.h3.copyWith(
@@ -88,21 +82,11 @@ class _LabReferralDetailsBody extends StatelessWidget {
       body: BlocConsumer<LabReferralsBloc, LabReferralsState>(
         listener: (context, state) {
           if (state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage!),
-                backgroundColor: AppColors.danger,
-              ),
-            );
-          }
+            UIHelpers.showErrorSnackBar(context, state.errorMessage!);
+}
           if (state.successMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.successMessage!),
-                backgroundColor: AppColors.success,
-              ),
-            );
-          }
+            UIHelpers.showSuccessSnackBar(context, state.successMessage!);
+}
         },
         builder: (context, state) {
           if (state.isLoading && state.selectedReferral == null) {
@@ -226,7 +210,6 @@ class _LabReferralDetailsBody extends StatelessWidget {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: isDark ? AppColors.darkTeal : AppColors.lightTeal,
                                       foregroundColor: Colors.white,
-                                      elevation: 0,
                                       padding: const EdgeInsets.symmetric(vertical: 12),
                                       shape: RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
                                     ),
@@ -928,7 +911,6 @@ class _LabReferralDetailsBody extends StatelessWidget {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: isDark ? AppColors.darkBgSurface : Colors.white,
           shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
           title: Text(
             mode == 'confirm' ? 'Confirm Booking?' : 'Cancel Referral?',
@@ -960,7 +942,6 @@ class _LabReferralDetailsBody extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: mode == 'confirm' ? (isDark ? AppColors.darkTeal : AppColors.lightTeal) : AppColors.danger,
                 foregroundColor: Colors.white,
-                elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
               ),
               child: Text(mode == 'confirm' ? 'Yes, Confirm' : 'Yes, Cancel'),

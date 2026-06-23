@@ -1,7 +1,6 @@
 import '../../../../core/network/dio_client.dart';
 import '../models/gym_model.dart';
 
-import '../models/gym_model.dart';
 import '../models/fitness_details_model.dart';
 import '../models/nutrition_details_model.dart';
 import '../models/meetings_model.dart';

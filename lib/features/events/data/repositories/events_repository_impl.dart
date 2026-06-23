@@ -1,6 +1,6 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
-import '../../../../core/network/api_exceptions.dart';
 import '../data_sources/events_remote_data_source.dart';
 import '../../domain/repositories/events_repository.dart';
 import '../models/event_models.dart';
@@ -15,10 +15,8 @@ class EventsRepositoryImpl implements EventsRepository {
     try {
       final events = await _remoteDataSource.getEvents(type: type);
       return Right(events);
-    } on ApiException catch (e) {
-      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 
@@ -27,10 +25,8 @@ class EventsRepositoryImpl implements EventsRepository {
     try {
       await _remoteDataSource.registerForEvent(eventId);
       return const Right(null);
-    } on ApiException catch (e) {
-      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 }

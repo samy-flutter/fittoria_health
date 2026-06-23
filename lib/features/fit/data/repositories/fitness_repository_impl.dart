@@ -18,10 +18,7 @@ class FitnessRepositoryImpl implements FitnessRepository {
       final summary = await _remoteDataSource.getFitnessSummary();
       return Right(summary);
     } catch (e) {
-      if (e is ApiException) {
-        return Left(ServerFailure(e.message));
-      }
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 

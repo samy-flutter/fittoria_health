@@ -9,6 +9,7 @@ import '../bloc/profile_cubit.dart';
 import '../bloc/profile_state.dart';
 import '../../../profile_records/data/models/profile_models.dart';
 import '../../../profile_records/data/models/records.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -110,8 +111,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   double? _calculateBmi(double? heightCm, double? weightKg) {
-    if (heightCm == null || weightKg == null || heightCm <= 0 || weightKg <= 0)
+    if (heightCm == null || weightKg == null || heightCm <= 0 || weightKg <= 0) {
       return null;
+    }
     return weightKg / ((heightCm / 100) * (heightCm / 100));
   }
 
@@ -148,10 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: CustomAppBar(
         leading: IconButton(
           icon: Icon(
             LucideIcons.chevronLeft,
@@ -189,9 +188,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Expanded(child: Text(state.successMessage!)),
                     ],
                   ),
-                  backgroundColor: isDark
-                      ? AppColors.darkBgSurface
-                      : AppColors.lightBgSurface,
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -210,9 +206,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Expanded(child: Text(state.errorMessage!)),
                     ],
                   ),
-                  backgroundColor: isDark
-                      ? AppColors.darkBgSurface
-                      : AppColors.lightBgSurface,
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -935,7 +928,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _buildFieldWrapper(
           'Gender',
           DropdownButtonFormField<int>(
-            value: p.genderId,
+            initialValue: p.genderId,
             dropdownColor: isDark
                 ? AppColors.darkBgSurface
                 : AppColors.lightBgSurface,
@@ -1028,7 +1021,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _buildFieldWrapper(
           'Blood Group',
           DropdownButtonFormField<int>(
-            value: p.bloodGroupId,
+            initialValue: p.bloodGroupId,
             dropdownColor: isDark
                 ? AppColors.darkBgSurface
                 : AppColors.lightBgSurface,

@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../data/models/fit_models.dart';
 import '../cubit/activity_cubit.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key});
@@ -27,15 +28,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Activity'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: BlocBuilder<ActivityCubit, ActivityState>(
         builder: (context, state) {
           if (state is ActivityInitial || state is ActivityLoading) {
@@ -50,7 +48,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
             return RefreshIndicator(
               color: const Color(0xFFE8843C),
-              onRefresh: () => context.read<ActivityCubit>().load(_range),
+              onRefresh: () => context.read<ActivityCubit>().load(_range, silently: true),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -177,7 +175,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
-  Widget _buildChartCard(bool isDark, data) {
+  Widget _buildChartCard(bool isDark, ActivityData data) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -253,7 +251,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
-  Widget _buildTotalsGrid(totals, bool isDark) {
+  Widget _buildTotalsGrid(ActivityLog totals, bool isDark) {
     return GridView.count(
       crossAxisCount: 2,
       crossAxisSpacing: 12,
@@ -270,7 +268,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
-  Widget _buildHistoryList(bool isDark, data) {
+  Widget _buildHistoryList(bool isDark, ActivityData data) {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
@@ -340,7 +338,7 @@ class _MetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -356,7 +354,7 @@ class _MetricCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: color.withValues(alpha: 0.15),
                   borderRadius: AppRadius.borderLg,
                 ),
                 child: Icon(icon, color: color, size: 14),

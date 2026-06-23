@@ -167,22 +167,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              // Forgot password logic
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(
-                              'Forgot password?',
-                              style: AppTextStyles.buttonMedium.copyWith(
-                                color: isDark ? AppColors.darkTeal : AppColors.lightTeal,
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                       AppSpacing.heightSm,

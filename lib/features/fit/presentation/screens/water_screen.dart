@@ -6,6 +6,7 @@ import 'dart:math';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class WaterScreen extends StatefulWidget {
   const WaterScreen({super.key});
@@ -17,7 +18,6 @@ class WaterScreen extends StatefulWidget {
 class _WaterScreenState extends State<WaterScreen> {
   int _currentWaterMl = 1250;
   final int _goalWaterMl = 2500;
-  final int _glassSizeMl = 250;
 
   void _addWater(int amount) {
     setState(() {
@@ -32,12 +32,9 @@ class _WaterScreenState extends State<WaterScreen> {
     final progress = _currentWaterMl / _goalWaterMl;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Water Intake'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -70,7 +67,6 @@ class _WaterScreenState extends State<WaterScreen> {
                     CircularProgressIndicator(
                       value: progress,
                       strokeWidth: 16,
-                      backgroundColor: Colors.transparent,
                       color: accentColor,
                       strokeCap: StrokeCap.round,
                     ),

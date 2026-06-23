@@ -6,6 +6,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../bloc/prescriptions_cubit.dart';
 import '../bloc/prescriptions_state.dart';
 import '../../data/models/prescription.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class PrescriptionsScreen extends StatefulWidget {
   const PrescriptionsScreen({super.key});
@@ -38,11 +39,8 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('My Prescriptions', style: TextStyle(fontWeight: FontWeight.bold)),
-        elevation: 0,
-        backgroundColor: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
         foregroundColor: isDark ? Colors.white : AppColors.lightTextPrimary,
       ),
       body: BlocBuilder<PrescriptionsCubit, PrescriptionsState>(

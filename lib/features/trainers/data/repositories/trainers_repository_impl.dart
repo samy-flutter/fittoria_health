@@ -1,3 +1,4 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/repositories/trainers_repository.dart';
@@ -37,7 +38,7 @@ class TrainersRepositoryImpl implements TrainersRepository {
       }
       return Right(List.from(_mockTrainers));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 
@@ -48,7 +49,7 @@ class TrainersRepositoryImpl implements TrainersRepository {
       // Simulating a successful booking
       return const Right(null);
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 }

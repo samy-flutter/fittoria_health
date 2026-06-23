@@ -304,7 +304,7 @@ class _LoadingDotsState extends State<_LoadingDots>
       children: List.generate(3, (i) {
         return AnimatedBuilder(
           animation: _dotAnims[i],
-          builder: (_, __) => Container(
+          builder: (_, _) => Container(
             margin: const EdgeInsets.symmetric(horizontal: 4),
             width: 8,
             height: 8,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class RecordScreen extends StatefulWidget {
   const RecordScreen({super.key});
@@ -48,12 +48,9 @@ class _RecordScreenState extends State<RecordScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Record Activity'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(

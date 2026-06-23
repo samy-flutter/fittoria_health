@@ -11,6 +11,7 @@ import '../../../../injection_container.dart';
 import '../cubit/events_cubit.dart';
 import '../cubit/events_state.dart';
 import '../../data/models/event_models.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
@@ -32,19 +33,7 @@ class _EventsView extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            LucideIcons.arrowLeft,
-            color: isDark
-                ? AppColors.darkTextPrimary
-                : AppColors.lightTextPrimary,
-          ),
-          onPressed: () => context.pop(),
-        ),
+      appBar: CustomAppBar(
         title: Row(
           children: [
             Container(
@@ -164,7 +153,7 @@ class _EventFilters extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             scrollDirection: Axis.horizontal,
             itemCount: filters.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final f = filters[index];
               final isSelected = currentFilter == f['key'];

@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../data/models/fitness_hub_models.dart';
 import '../cubit/goals_cubit.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class GoalsScreen extends StatefulWidget {
   const GoalsScreen({super.key});
@@ -27,11 +28,8 @@ class _GoalsScreenState extends State<GoalsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('All Goals'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.plus),
@@ -48,8 +46,8 @@ class _GoalsScreenState extends State<GoalsScreen> {
             return Center(child: Text(state.message));
           }
           if (state is GoalsLoaded) {
-            final _goals = state.goals;
-            if (_goals.isEmpty) {
+            final goals = state.goals;
+            if (goals.isEmpty) {
               return Center(
                 child: Text(
                   'No goals set.',
@@ -59,9 +57,9 @@ class _GoalsScreenState extends State<GoalsScreen> {
             }
             return ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: _goals.length,
+              itemCount: goals.length,
               itemBuilder: (context, index) {
-                final g = _goals[index];
+                final g = goals[index];
                 return _GoalDetailedCard(goal: g);
               },
             );
@@ -178,7 +176,6 @@ class _GoalDetailedCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: (goal.pct / 100).clamp(0.0, 1.0),
-              backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
               color: AppColors.fitOrange,
               minHeight: 8,
             ),

@@ -10,6 +10,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../injection_container.dart';
 import '../../data/models/clinic.dart';
 import '../cubit/clinics_cubit.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 const _clinicTypes = ['Polyclinic', 'Diagnostic', 'Clinic', 'Hospital'];
 
@@ -46,10 +47,7 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: CustomAppBar(
         leading: IconButton(
           icon: Icon(LucideIcons.chevronLeft,
               color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary, size: 20),
@@ -187,7 +185,7 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
                   return ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: 4,
-                    itemBuilder: (_, __) => Container(
+                    itemBuilder: (_, _) => Container(
                       height: 140,
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(

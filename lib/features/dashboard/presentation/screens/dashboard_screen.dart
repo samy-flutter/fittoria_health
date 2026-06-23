@@ -12,6 +12,7 @@ import '../../../../routes/route_names.dart';
 import '../cubit/dashboard_cubit.dart';
 import '../cubit/dashboard_state.dart';
 import '../widgets/dashboard_skeleton.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import '../../../appointments/data/models/appointment.dart';
 import '../../../profile_records/data/models/profile_models.dart';
 import '../../../fit/data/models/fitness_models.dart';
@@ -49,24 +50,9 @@ class _DashboardView extends StatelessWidget {
             return const DashboardSkeleton();
           }
           if (state is DashboardError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    LucideIcons.alertTriangle,
-                    size: 48,
-                    color: AppColors.danger,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(state.message),
-                  TextButton(
-                    onPressed: () =>
-                        context.read<DashboardCubit>().loadDashboardData(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
+            return ErrorStateWidget(
+              message: state.message,
+              onRetry: () => context.read<DashboardCubit>().loadDashboardData(),
             );
           }
           if (state is DashboardLoaded) {

@@ -1,9 +1,10 @@
+import '../../../../core/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class MoodScreen extends StatefulWidget {
   const MoodScreen({super.key});
@@ -35,27 +36,17 @@ class _MoodScreenState extends State<MoodScreen> {
   void _saveMood() {
     if (_selectedMood == null) return;
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Mood logged successfully!', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-        backgroundColor: AppColors.fitOrange,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
-      ),
-    );
-  }
+    UIHelpers.showSuccessSnackBar(context, 'Mood logged successfully!');
+}
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Log Mood'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -140,8 +131,7 @@ class _MoodScreenState extends State<MoodScreen> {
                   backgroundColor: AppColors.fitOrange,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: AppRadius.borderXl),
-                  elevation: 0,
-                ),
+                  ),
                 onPressed: _selectedMood != null ? _saveMood : null,
                 child: Text('Save Log', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold)),
               ),

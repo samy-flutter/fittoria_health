@@ -1,6 +1,6 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
-import '../../../../core/network/api_exceptions.dart';
 import '../../domain/repositories/care_repository.dart';
 import '../data_sources/care_remote_data_source.dart';
 import '../models/gym_model.dart';
@@ -19,10 +19,7 @@ class CareRepositoryImpl implements CareRepository {
       final data = await _remoteDataSource.getGymData();
       return Right(data);
     } catch (e) {
-      if (e is ApiException) {
-        return Left(ServerFailure(e.message));
-      }
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 
@@ -32,10 +29,7 @@ class CareRepositoryImpl implements CareRepository {
       final data = await _remoteDataSource.getFitnessDetails();
       return Right(data);
     } catch (e) {
-      if (e is ApiException) {
-        return Left(ServerFailure(e.message));
-      }
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 
@@ -45,10 +39,7 @@ class CareRepositoryImpl implements CareRepository {
       final data = await _remoteDataSource.getNutritionDetails();
       return Right(data);
     } catch (e) {
-      if (e is ApiException) {
-        return Left(ServerFailure(e.message));
-      }
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 
@@ -58,10 +49,7 @@ class CareRepositoryImpl implements CareRepository {
       final data = await _remoteDataSource.getMeetingsData();
       return Right(data);
     } catch (e) {
-      if (e is ApiException) {
-        return Left(ServerFailure(e.message));
-      }
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 }

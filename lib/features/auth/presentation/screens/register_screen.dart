@@ -1,3 +1,4 @@
+import '../../../../core/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +13,7 @@ import '../../../../injection_container.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -44,31 +46,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return BlocProvider<AuthBloc>(
       create: (_) => sl<AuthBloc>(),
       child: Scaffold(
-        backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              size: 20.0,
-            ),
-            onPressed: () {
-              context.pop();
-            },
+        appBar: CustomAppBar(
           ),
-        ),
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is RegisterSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: AppColors.success,
-                ),
-              );
-              // Navigate back to Login screen
+              UIHelpers.showErrorSnackBar(context, state.message);
+// Navigate back to Login screen
               context.pushReplacement(RouteNames.login);
             }
           },

@@ -1,3 +1,4 @@
+import 'package:fittoria_patient_app/features/shop/presentation/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import '../injection_container.dart';
 // Screens
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
+import '../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../features/appointments/presentation/screens/appointments_screen.dart';
 import '../features/booking/presentation/screens/booking_screen.dart';
@@ -32,7 +34,15 @@ import '../features/ai_nutrition/presentation/screens/ai_nutrition_screen.dart';
 import '../features/achievements/presentation/screens/achievements_screen.dart';
 import '../features/lab_booking/presentation/screens/lab_booking_screen.dart';
 import '../features/shop/presentation/screens/shop_screen.dart';
+import '../features/shop/presentation/screens/cart_screen.dart';
+import '../features/shop/presentation/screens/checkout_screen.dart';
+import '../features/shop/presentation/screens/orders_screen.dart';
+import '../features/shop/presentation/screens/order_tracking_screen.dart';
+import '../features/shop/presentation/screens/addresses_screen.dart';
+import '../features/shop/presentation/screens/address_form_screen.dart';
 import '../features/academy/presentation/screens/academy_screen.dart';
+import '../features/academy/presentation/screens/academy_video_details_screen.dart';
+import '../features/academy/data/models/academy_models.dart';
 import '../features/community/presentation/screens/community_hub_screen.dart';
 import '../features/community/presentation/screens/social_screen.dart';
 import '../features/community/presentation/screens/clubs_screen.dart';
@@ -70,6 +80,8 @@ import '../features/fit/presentation/cubit/goals_cubit.dart';
 import '../features/fit/presentation/cubit/challenges_cubit.dart';
 import '../features/fit/presentation/cubit/body_progress_cubit.dart';
 import '../features/fit/presentation/cubit/devices_cubit.dart';
+import '../features/shop/presentation/cubit/addresses_cubit.dart';
+import '../features/shop/data/models/shop_models.dart';
 import '../core/logging/app_logger.dart';
 
 class AppRouter {
@@ -78,13 +90,13 @@ class AppRouter {
 
   AppRouter(this._prefs, this.authStatusNotifier);
 
-  static final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> _rootNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   List<GoRoute> get _placeholderRoutes {
     final Map<String, String> placeholderMap = {
       RouteNames.patientShopCart: 'Cart',
       RouteNames.patientShopOrders: 'My Orders',
-      RouteNames.patientShopAddresses: 'Addresses',
     };
     return placeholderMap.entries.map((e) {
       return GoRoute(
@@ -106,7 +118,7 @@ class AppRouter {
       // Splash handles its own navigation — never redirect from it
       if (loc == RouteNames.splash) return null;
 
-      final isAuthRoute = loc == RouteNames.login || loc == RouteNames.register;
+      final isAuthRoute = loc == RouteNames.login || loc == RouteNames.register || loc == RouteNames.forgotPassword;
 
       if (!isLoggedIn) {
         if (loc == RouteNames.register) return null;
@@ -120,7 +132,7 @@ class AppRouter {
         AppLogger.nav(loc, RouteNames.patientDashboard);
         return RouteNames.patientDashboard;
       }
-      
+
       // If navigating explicitly to `/` (initial), force to splash to start lifecycle
       if (loc == RouteNames.initial) {
         return RouteNames.splash;
@@ -133,10 +145,7 @@ class AppRouter {
         path: RouteNames.splash,
         builder: (context, state) => const SplashScreen(),
       ),
-      GoRoute(
-        path: RouteNames.initial,
-        redirect: (_, _) => RouteNames.splash,
-      ),
+      GoRoute(path: RouteNames.initial, redirect: (_, _) => RouteNames.splash),
       GoRoute(
         path: RouteNames.login,
         builder: (context, state) => const LoginScreen(),
@@ -144,6 +153,10 @@ class AppRouter {
       GoRoute(
         path: RouteNames.register,
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.forgotPassword,
+        builder: (context, state) => const ForgotPasswordScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -298,7 +311,9 @@ class AppRouter {
         builder: (context, state) {
           final event = state.extra as FitEvent?;
           if (event == null) {
-            return const Scaffold(body: Center(child: Text('Event details not available.')));
+            return const Scaffold(
+              body: Center(child: Text('Event details not available.')),
+            );
           }
           return EventDetailsScreen(event: event);
         },
@@ -375,9 +390,71 @@ class AppRouter {
         builder: (context, state) => const ShopScreen(),
       ),
       GoRoute(
+        path: RouteNames.patientShopCart,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const CartScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.patientShopCheckout,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: sl<CartCubit>()), // Use the same CartCubit
+            BlocProvider.value(value: sl<AddressesCubit>()),
+          ],
+          child: const CheckoutScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.patientShopOrders,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const OrdersScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.patientShopOrderTracking,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final idStr = state.pathParameters['id'];
+          final id = int.tryParse(idStr ?? '') ?? 0;
+          return OrderTrackingScreen(orderId: id);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.patientShopAddresses,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => BlocProvider.value(
+          value: sl<AddressesCubit>(),
+          child: const AddressesScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.patientShopAddressForm,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final address = state.extra as ShopAddress?;
+          return BlocProvider.value(
+            value: sl<AddressesCubit>(),
+            child: AddressFormScreen(existingAddress: address),
+          );
+        },
+      ),
+      GoRoute(
         path: RouteNames.patientAcademy,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AcademyScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.patientAcademyDetails,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final video = state.extra as AcademyVideo?;
+          if (video == null) {
+            return const Scaffold(
+              body: Center(child: Text('Video details not available.')),
+            );
+          }
+          return AcademyVideoDetailsScreen(video: video);
+        },
       ),
       GoRoute(
         path: RouteNames.patientFitLog,

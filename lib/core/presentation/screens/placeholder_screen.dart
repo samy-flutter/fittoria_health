@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
+import '../../widgets/custom_app_bar.dart';
 
 class PlaceholderScreen extends StatelessWidget {
   final String title;
@@ -14,10 +15,7 @@ class PlaceholderScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: CustomAppBar(
         leading: BackButton(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
         title: Text(
           title,
@@ -73,8 +71,7 @@ class PlaceholderScreen extends StatelessWidget {
                     backgroundColor: AppColors.fitOrange,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
-                    elevation: 0,
-                  ),
+                    ),
                   child: Text(
                     'Go Back',
                     style: GoogleFonts.inter(fontWeight: FontWeight.w600),

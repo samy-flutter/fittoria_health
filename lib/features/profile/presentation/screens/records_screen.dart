@@ -6,6 +6,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../bloc/records_cubit.dart';
 import '../bloc/records_state.dart';
 import '../../../profile_records/data/models/records.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class RecordsScreen extends StatefulWidget {
   const RecordsScreen({super.key});
@@ -46,11 +47,8 @@ class _RecordsScreenState extends State<RecordsScreen> with SingleTickerProvider
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Health Records', style: TextStyle(fontWeight: FontWeight.bold)),
-        elevation: 0,
-        backgroundColor: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
         foregroundColor: isDark ? Colors.white : AppColors.lightTextPrimary,
         bottom: TabBar(
           controller: _tabController,

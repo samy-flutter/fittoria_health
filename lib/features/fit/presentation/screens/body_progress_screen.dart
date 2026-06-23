@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../cubit/body_progress_cubit.dart';
 import '../../data/models/fitness_hub_models.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class BodyProgressScreen extends StatefulWidget {
   const BodyProgressScreen({super.key});
@@ -28,12 +29,9 @@ class _BodyProgressScreenState extends State<BodyProgressScreen> {
     const accentColor = Color(0xFFA855F7);
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Body Progress'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: BlocBuilder<BodyProgressCubit, BodyProgressState>(
         builder: (context, state) {
           if (state is BodyProgressLoading || state is BodyProgressInitial) {

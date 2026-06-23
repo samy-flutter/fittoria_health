@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +13,7 @@ import '../cubit/social_state.dart';
 import '../cubit/social_comments_cubit.dart';
 import '../cubit/social_comments_state.dart';
 import '../../data/models/social_models.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class SocialScreen extends StatelessWidget {
   const SocialScreen({super.key});
@@ -35,14 +35,7 @@ class _SocialView extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-          onPressed: () => context.pop(),
-        ),
+      appBar: CustomAppBar(
         title: Row(
           children: [
             Container(
@@ -153,7 +146,6 @@ class _SocialView extends StatelessWidget {
     showModalBottomSheet(
       context: parentContext,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) {
         return BlocProvider.value(
           value: parentContext.read<SocialCubit>(),
@@ -311,7 +303,7 @@ class _PostCard extends StatelessWidget {
                 width: double.infinity,
                 height: 200,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                errorBuilder: (_, _, _) => const SizedBox.shrink(),
               ),
             ),
           ],
@@ -379,7 +371,6 @@ class _PostCard extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (_) {
         return BlocProvider(
           create: (_) => sl<SocialCommentsCubit>()..loadComments(post.id),

@@ -4,6 +4,7 @@ class RouteNames {
   static const String initial = '/';
   static const String splash = '/splash';
   static const String login = '/login';
+  static const String forgotPassword = '/forgot-password';
   static const String register = '/register';
   
   static const String patientDashboard = '/patient';
@@ -31,10 +32,14 @@ class RouteNames {
   static const String patientEventDetails = '/patient/events/details';
   static const String patientChallenges = '/patient/fit/challenges';
   static const String patientAcademy = '/patient/academy';
+  static const String patientAcademyDetails = '/patient/academy/video';
   static const String patientShop = '/patient/shop';
   static const String patientShopCart = '/patient/shop/cart';
+  static const String patientShopCheckout = '/patient/shop/checkout';
   static const String patientShopOrders = '/patient/shop/orders';
+  static const String patientShopOrderTracking = '/patient/shop/orders/:id';
   static const String patientShopAddresses = '/patient/shop/addresses';
+  static const String patientShopAddressForm = '/patient/shop/address-form';
   static const String patientAchievements = '/patient/achievements';
   static const String patientOnboarding = '/patient/onboarding';
   static const String patientGym = '/patient/gym';
@@ -67,4 +72,5 @@ class RouteNames {
 
   // Details routes
   static String patientLabReferralDetails(int id) => '/patient/lab-referrals/$id';
+  static String patientShopOrderTrackingDetails(int id) => '/patient/shop/orders/$id';
 }

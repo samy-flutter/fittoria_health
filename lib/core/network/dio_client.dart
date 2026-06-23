@@ -116,6 +116,21 @@ class DioClient {
       data: data,
       queryParameters: queryParameters,
       options: options,
+    );
+  }
+
+  Future<Response<T>> put<T>(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) async {
+    return await _dio.put<T>(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
       cancelToken: cancelToken,
     );
   }

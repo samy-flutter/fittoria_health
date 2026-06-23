@@ -1,3 +1,4 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/repositories/lab_booking_repository.dart';
@@ -23,7 +24,7 @@ class LabBookingRepositoryImpl implements LabBookingRepository {
       await Future.delayed(const Duration(milliseconds: 600));
       return Right(List.from(_mockBookings));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 
@@ -54,7 +55,7 @@ class LabBookingRepositoryImpl implements LabBookingRepository {
       );
       return const Right(null);
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 }

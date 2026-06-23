@@ -2,17 +2,14 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/repositories/fit_repository.dart';
 import '../models/fit_models.dart';
+import '../data_sources/pedometer_local_data_source.dart';
 
 class FitRepositoryImpl implements FitRepository {
-  List<ActivityLog> _activityLogs = [
-    ActivityLog(steps: 6500, distanceKm: 4.2, caloriesKcal: 310, activeMinutes: 45, logDate: DateTime.now().subtract(const Duration(days: 0))),
-    ActivityLog(steps: 8200, distanceKm: 5.5, caloriesKcal: 400, activeMinutes: 55, logDate: DateTime.now().subtract(const Duration(days: 1))),
-    ActivityLog(steps: 10500, distanceKm: 7.1, caloriesKcal: 520, activeMinutes: 75, logDate: DateTime.now().subtract(const Duration(days: 2))),
-    ActivityLog(steps: 4000, distanceKm: 2.5, caloriesKcal: 180, activeMinutes: 20, logDate: DateTime.now().subtract(const Duration(days: 3))),
-    ActivityLog(steps: 12000, distanceKm: 8.5, caloriesKcal: 600, activeMinutes: 90, logDate: DateTime.now().subtract(const Duration(days: 4))),
-  ];
+  final LocalActivityDataSource healthDataSource;
 
-  List<HeartRateReading> _heartRateReadings = [
+  FitRepositoryImpl({required this.healthDataSource});
+
+  final List<HeartRateReading> _heartRateReadings = [
     HeartRateReading(id: 1, bpm: 72, readingType: 'resting', measuredAt: DateTime.now().subtract(const Duration(hours: 1))),
     HeartRateReading(id: 2, bpm: 120, readingType: 'active', measuredAt: DateTime.now().subtract(const Duration(hours: 5))),
     HeartRateReading(id: 3, bpm: 85, readingType: 'spot', measuredAt: DateTime.now().subtract(const Duration(hours: 10))),
@@ -20,7 +17,7 @@ class FitRepositoryImpl implements FitRepository {
     HeartRateReading(id: 5, bpm: 145, readingType: 'active', measuredAt: DateTime.now().subtract(const Duration(hours: 28))),
   ];
 
-  List<SleepLog> _sleepLogs = [
+  final List<SleepLog> _sleepLogs = [
     SleepLog(id: 1, date: DateTime.now().subtract(const Duration(days: 1)), durationFormatted: '7h 15m', totalMinutes: 435, remMinutes: 90, lightMinutes: 210, deepMinutes: 105, awakeMinutes: 30),
     SleepLog(id: 2, date: DateTime.now().subtract(const Duration(days: 2)), durationFormatted: '6h 45m', totalMinutes: 405, remMinutes: 80, lightMinutes: 200, deepMinutes: 90, awakeMinutes: 35),
     SleepLog(id: 3, date: DateTime.now().subtract(const Duration(days: 3)), durationFormatted: '8h 10m', totalMinutes: 490, remMinutes: 110, lightMinutes: 220, deepMinutes: 140, awakeMinutes: 20),
@@ -30,22 +27,22 @@ class FitRepositoryImpl implements FitRepository {
 
   @override
   Future<Either<Failure, ActivityData>> getActivity({required String range}) async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    int totalSteps = _activityLogs.fold(0, (sum, item) => sum + item.steps);
-    double totalDistance = _activityLogs.fold(0.0, (sum, item) => sum + item.distanceKm);
-    int totalCalories = _activityLogs.fold(0, (sum, item) => sum + item.caloriesKcal);
-    int totalActiveMinutes = _activityLogs.fold(0, (sum, item) => sum + item.activeMinutes);
+    try {
+      final data = await healthDataSource.getActivityData();
+      if (data == null) {
+        return Left(ServerFailure("Could not fetch activity data."));
+      }
 
-    return Right(ActivityData(
-      totals: ActivityLog(steps: totalSteps, distanceKm: totalDistance, caloriesKcal: totalCalories, activeMinutes: totalActiveMinutes, logDate: DateTime.now()),
-      series: _activityLogs,
-    ));
+      return Right(data);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, void>> logActivity(ActivityLog log) async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    _activityLogs.insert(0, log);
+    // Note: Health Connect doesn't easily allow raw writes of complex aggregated logs without multiple granular data points.
+    // This is currently a stub for manual entry.
     return const Right(null);
   }
 

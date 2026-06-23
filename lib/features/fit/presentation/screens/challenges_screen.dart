@@ -1,3 +1,4 @@
+import '../../../../core/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -7,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../data/models/fitness_hub_models.dart';
 import '../cubit/challenges_cubit.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class ChallengesScreen extends StatefulWidget {
   const ChallengesScreen({super.key});
@@ -27,18 +29,15 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Challenges'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: BlocConsumer<ChallengesCubit, ChallengesState>(
         listener: (context, state) {
           if (state is ChallengesError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+            UIHelpers.showErrorSnackBar(context, state.message);
           } else if (state is ChallengesActionSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Joined challenge successfully!')));
+            UIHelpers.showSuccessSnackBar(context, 'Joined challenge successfully!');
           }
         },
         builder: (context, state) {
@@ -46,12 +45,12 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          List<FitChallengeDetail> _activeChallenges = [];
-          List<FitChallengeDetail> _availableChallenges = [];
+          List<FitChallengeDetail> activeChallenges = [];
+          List<FitChallengeDetail> availableChallenges = [];
 
           if (state is ChallengesLoaded) {
-            _activeChallenges = state.challenges.where((c) => c.joined).toList();
-            _availableChallenges = state.challenges.where((c) => !c.joined).toList();
+            activeChallenges = state.challenges.where((c) => c.joined).toList();
+            availableChallenges = state.challenges.where((c) => !c.joined).toList();
           }
 
           return SingleChildScrollView(
@@ -59,7 +58,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (_activeChallenges.isNotEmpty) ...[
+                if (activeChallenges.isNotEmpty) ...[
                   Row(
                     children: [
                       const Icon(LucideIcons.trophy, color: AppColors.fitOrange, size: 20),
@@ -71,10 +70,10 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  ..._activeChallenges.map((c) => _ChallengeCard(challenge: c, isActive: true)),
+                  ...activeChallenges.map((c) => _ChallengeCard(challenge: c, isActive: true)),
                   const SizedBox(height: 32),
                 ],
-                if (_availableChallenges.isNotEmpty) ...[
+                if (availableChallenges.isNotEmpty) ...[
                   Row(
                     children: [
                       const Icon(LucideIcons.sparkles, color: AppColors.fitOrange, size: 20),
@@ -86,9 +85,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  ..._availableChallenges.map((c) => _ChallengeCard(challenge: c, isActive: false)),
+                  ...availableChallenges.map((c) => _ChallengeCard(challenge: c, isActive: false)),
                 ],
-                if (_activeChallenges.isEmpty && _availableChallenges.isEmpty)
+                if (activeChallenges.isEmpty && availableChallenges.isEmpty)
                   Center(
                     child: Text('No challenges available.', style: GoogleFonts.inter(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
                   ),
@@ -162,7 +161,6 @@ class _ChallengeCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: (pct / 100).clamp(0.0, 1.0),
-                backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
                 color: AppColors.fitOrange,
                 minHeight: 8,
               ),

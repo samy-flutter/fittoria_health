@@ -1,9 +1,9 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/repositories/academy_repository.dart';
 import '../data_sources/academy_remote_data_source.dart';
 import '../models/academy_models.dart';
-import '../../../../core/network/api_exceptions.dart';
 
 class AcademyRepositoryImpl implements AcademyRepository {
   final AcademyRemoteDataSource _remoteDataSource;
@@ -23,10 +23,8 @@ class AcademyRepositoryImpl implements AcademyRepository {
         category: category,
       );
       return Right(videos);
-    } on ApiException catch (e) {
-      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 
@@ -46,10 +44,8 @@ class AcademyRepositoryImpl implements AcademyRepository {
         category: '',
         liked: result['liked'] == true,
       ));
-    } on ApiException catch (e) {
-      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 }

@@ -6,6 +6,7 @@ import '../../../../core/storage/preferences_helper.dart';
 import '../../../../routes/app_router.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/logging/app_logger.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remoteDataSource;
@@ -86,6 +87,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> forgotPassword(String identifier) async {
+    await _remoteDataSource.forgotPassword(identifier);
+  }
+
+  @override
   Future<bool> checkAuthStatus() async {
     try {
       final isLoggedIn = _prefs.isLoggedIn();
@@ -133,6 +139,9 @@ class AuthRepositoryImpl implements AuthRepository {
           
           final response = await refreshDio.post(
             ApiEndpoints.refresh,
+            options: Options(headers: {
+              'Authorization': 'Bearer $refreshToken',
+            }),
             data: {
               'sessionId': sessionId,
               'refreshToken': refreshToken,
@@ -159,6 +168,7 @@ class AuthRepositoryImpl implements AuthRepository {
           }
         } catch (e) {
           // If refresh API call fails completely, force logout
+          AppLogger.e('Startup token refresh failed', e.toString());
           await _handleLocalLogout();
           return false;
         }

@@ -8,13 +8,15 @@ class SocialCubit extends Cubit<SocialState> {
   SocialCubit(this._repository) : super(SocialInitial());
 
   Future<void> loadPosts({String? feedType}) async {
-    final currentFeedType = feedType ?? (state is SocialLoaded ? (state as SocialLoaded).feedType : 'explore');
+    final currentFeedType =
+        feedType ??
+        (state is SocialLoaded ? (state as SocialLoaded).feedType : 'explore');
     emit(SocialLoading());
-    
+
     // In social_remote_data_source, getPosts takes feed. For explore we pass null, for following we pass 'following'
     final apiFeedParam = currentFeedType == 'following' ? 'following' : null;
-    final result = await _repository.getPosts(feed: apiFeedParam); 
-    
+    final result = await _repository.getPosts(feed: apiFeedParam);
+
     result.fold(
       (failure) => emit(SocialError(failure.message)),
       (posts) => emit(SocialLoaded(posts: posts, feedType: currentFeedType)),
@@ -28,14 +30,18 @@ class SocialCubit extends Cubit<SocialState> {
     loadPosts(feedType: feedType);
   }
 
-  Future<void> createPost(String body, String postType, List<String> mediaUrls) async {
+  Future<void> createPost(
+    String body,
+    String postType,
+    List<String> mediaUrls,
+  ) async {
     if (state is! SocialLoaded) return;
     final currentState = state as SocialLoaded;
-    
+
     emit(currentState.copyWith(isCreatingPost: true));
-    
+
     final result = await _repository.createPost(body, postType, mediaUrls);
-    
+
     result.fold(
       (failure) {
         // Stop loading, maybe emit a temporary error state, but let's just revert
@@ -64,13 +70,13 @@ class SocialCubit extends Cubit<SocialState> {
       );
       emit(currentState.copyWith(posts: posts));
     }
-    
+
     final result = await _repository.likePost(postId);
     result.fold(
       (failure) {}, // Ignore errors for optimistic like
       (_) {
         // We already optimistically updated
-      }
+      },
     );
   }
 
@@ -86,27 +92,11 @@ class SocialCubit extends Cubit<SocialState> {
       posts[index] = p.copyWith(isSaved: !p.isSaved);
       emit(currentState.copyWith(posts: posts));
     }
-    
+
     final result = await _repository.savePost(postId);
     result.fold(
       (failure) {}, // Ignore errors for optimistic save
-      (_) {}
-    );
-  }
-
-  Future<void> _reloadSilently() async {
-    if (state is! SocialLoaded) return;
-    final currentState = state as SocialLoaded;
-    
-    final apiFeedParam = currentState.feedType == 'following' ? 'following' : null;
-    final result = await _repository.getPosts(feed: apiFeedParam);
-    result.fold(
-      (failure) => null,
-      (posts) {
-        if (!isClosed) {
-          emit(currentState.copyWith(posts: posts));
-        }
-      },
+      (_) {},
     );
   }
 }

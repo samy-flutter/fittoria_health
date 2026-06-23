@@ -7,8 +7,11 @@ import 'core/logging/app_bloc_observer.dart';
 import 'core/theme/theme_cubit.dart';
 import 'routes/app_router.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
 
   // Wire structured BLoC logging
   Bloc.observer = const AppBlocObserver();

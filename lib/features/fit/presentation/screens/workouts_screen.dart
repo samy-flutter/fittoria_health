@@ -1,3 +1,4 @@
+import '../../../../core/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -9,6 +10,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../routes/route_names.dart';
 import '../cubit/workouts_cubit.dart';
 import '../../data/models/fitness_hub_models.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class WorkoutsScreen extends StatefulWidget {
   const WorkoutsScreen({super.key});
@@ -56,21 +58,13 @@ class _WorkoutsScreenState extends State<WorkoutsScreen> {
   void _saveLog() {
     if (_durationController.text.isEmpty) return;
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Workout logged successfully!', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-        backgroundColor: AppColors.fitOrange,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
-      ),
-    );
-  }
+    UIHelpers.showSuccessSnackBar(context, 'Workout logged successfully!');
+}
 
   void _showManualLogModal(BuildContext context, bool isDark) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (ctx) {
         return StatefulBuilder(
           builder: (context, setModalState) {
@@ -222,12 +216,9 @@ class _WorkoutsScreenState extends State<WorkoutsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Workouts'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: BlocBuilder<WorkoutsCubit, WorkoutsState>(
         builder: (context, state) {
           if (state is WorkoutsLoading || state is WorkoutsInitial) {
@@ -255,8 +246,7 @@ class _WorkoutsScreenState extends State<WorkoutsScreen> {
                       backgroundColor: AppColors.fitOrange,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: AppRadius.borderXl),
-                      elevation: 0,
-                    ),
+                      ),
                     onPressed: () => context.push(RouteNames.patientFitRecord),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -271,15 +261,13 @@ class _WorkoutsScreenState extends State<WorkoutsScreen> {
                 const SizedBox(width: 12),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
                     foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: AppRadius.borderXl,
                       side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
                     ),
-                    elevation: 0,
-                  ),
+                    ),
                   onPressed: () => _showManualLogModal(context, isDark),
                   child: Row(
                     children: [

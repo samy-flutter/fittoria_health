@@ -8,6 +8,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../injection_container.dart';
 import '../cubit/meetings_cubit.dart';
 import '../../data/models/meetings_model.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class VideoMeetingsScreen extends StatelessWidget {
   const VideoMeetingsScreen({super.key});
@@ -29,11 +30,8 @@ class _VideoMeetingsScreenView extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Consultations'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.calendarPlus),
@@ -143,8 +141,8 @@ class _VideoMeetingsScreenView extends StatelessWidget {
                 height: 48,
                 decoration: BoxDecoration(
                   color: meeting.mode == 'video'
-                      ? AppColors.fitOrange.withOpacity(0.1)
-                      : Colors.blue.withOpacity(0.1),
+                      ? AppColors.fitOrange.withValues(alpha: 0.1)
+                      : Colors.blue.withValues(alpha: 0.1),
                   borderRadius: AppRadius.borderLg,
                 ),
                 child: Icon(
@@ -192,7 +190,7 @@ class _VideoMeetingsScreenView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
+                    color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: AppRadius.borderMd,
                   ),
                   child: Text(
@@ -237,7 +235,7 @@ class _VideoMeetingsScreenView extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: Colors.purple.withOpacity(0.1),
+                  color: Colors.purple.withValues(alpha: 0.1),
                   borderRadius: AppRadius.borderLg,
                 ),
                 child: const Icon(LucideIcons.monitorPlay, color: Colors.purple),
@@ -283,7 +281,7 @@ class _VideoMeetingsScreenView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.purple.withOpacity(0.1),
+                    color: Colors.purple.withValues(alpha: 0.1),
                     borderRadius: AppRadius.borderMd,
                   ),
                   child: Text(

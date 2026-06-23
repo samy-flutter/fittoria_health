@@ -1,6 +1,6 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
-import '../../../../core/network/api_exceptions.dart';
 import '../data_sources/clubs_remote_data_source.dart';
 import '../models/club_models.dart';
 import '../../domain/repositories/clubs_repository.dart';
@@ -15,10 +15,8 @@ class ClubsRepositoryImpl implements ClubsRepository {
     try {
       final clubs = await _remoteDataSource.getClubs();
       return Right(clubs);
-    } on ApiException catch (e) {
-      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 
@@ -27,10 +25,8 @@ class ClubsRepositoryImpl implements ClubsRepository {
     try {
       await _remoteDataSource.toggleClubMembership(clubId);
       return const Right(null);
-    } on ApiException catch (e) {
-      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
   @override
@@ -38,10 +34,8 @@ class ClubsRepositoryImpl implements ClubsRepository {
     try {
       final messages = await _remoteDataSource.getClubChat(clubId, after: after);
       return Right(messages);
-    } on ApiException catch (e) {
-      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 
@@ -50,10 +44,8 @@ class ClubsRepositoryImpl implements ClubsRepository {
     try {
       await _remoteDataSource.sendChatMessage(clubId, body);
       return const Right(null);
-    } on ApiException catch (e) {
-      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ExceptionHandler.handle(e));
     }
   }
 }

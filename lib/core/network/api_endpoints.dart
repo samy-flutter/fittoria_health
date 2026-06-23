@@ -1,15 +1,17 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiEndpoints {
   ApiEndpoints._();
 
-  // static const String baseUrl = 'https://crm.fittoria.com'; // Change to correct API url if needed
-  // Use 10.0.2.2 for Android Emulator, or your machine's IP (e.g. 192.168.1.x) for physical devices.
-  static const String baseUrl = 'https://www.fittoria.in';
+  // Load base URL from .env file, fallback if missing
+  static String get baseUrl => dotenv.env['API_BASE_URL'] ?? 'https://www.fittoria.in';
 
   // Auth endpoints
   static const String login = '/api/v2/auth/mobile/login';
   static const String mfa = '/api/v2/auth/mfa';
   static const String refresh = '/api/v2/auth/mobile/refresh';
   static const String logout = '/api/v2/auth/mobile/logout';
+  static const String forgotPassword = '/api/v2/auth/forgot-password';
   static const String register = '/api/patient/register';
 
   // Patient endpoints
@@ -22,9 +24,14 @@ class ApiEndpoints {
   static const String records = '/api/patient/records';
   static const String labReports = '/api/patient/lab-reports';
   static const String labReferrals = '/api/patient/lab-referrals';
+  static const String patientShop = '/api/patient/shop';
+  static const String patientCart = '/api/patient/cart';
+  static const String patientOrders = '/api/patient/orders';
+  static const String patientAddresses = '/api/patient/addresses';
 
   static String cancelAppointment(int id) => '/api/patient/appointments/$id';
   static String clinicDoctors(int clinicId) => '/api/patient/clinics/$clinicId/doctors';
   static String generateInvoicePdf(int id) => '/api/patient/invoices/$id/pdf';
   static String labReferralDetails(int id) => '/api/patient/lab-referrals/$id';
+  static String patientOrderDetails(int id) => '/api/patient/orders/$id';
 }

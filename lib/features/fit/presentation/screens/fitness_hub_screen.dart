@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/presentation/widgets/hub_grid.dart';
 import '../../../../routes/route_names.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class FitnessHubScreen extends StatelessWidget {
   const FitnessHubScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Fitness'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: HubGrid(
         title: 'Fitness Tracking',
         subtitle: 'Track every part of your training',

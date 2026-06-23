@@ -1,3 +1,4 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/booking_repository.dart';
 import 'booking_event.dart';
@@ -38,7 +39,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
-        errorMessage: () => e.toString(),
+        errorMessage: () => ExceptionHandler.handle(e).message,
       ));
     }
   }
@@ -54,7 +55,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
-        errorMessage: () => e.toString(),
+        errorMessage: () => ExceptionHandler.handle(e).message,
       ));
     }
   }
@@ -78,7 +79,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
-        errorMessage: () => e.toString(),
+        errorMessage: () => ExceptionHandler.handle(e).message,
       ));
     }
   }
@@ -143,7 +144,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
-        errorMessage: () => e.toString(),
+        errorMessage: () => ExceptionHandler.handle(e).message,
       ));
     }
   }

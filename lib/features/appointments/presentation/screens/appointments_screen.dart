@@ -13,6 +13,7 @@ import '../../data/models/appointment.dart';
 import '../bloc/appointments_bloc.dart';
 import '../bloc/appointments_event.dart';
 import '../bloc/appointments_state.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class AppointmentsScreen extends StatelessWidget {
   const AppointmentsScreen({super.key});
@@ -34,10 +35,7 @@ class _AppointmentsBody extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: CustomAppBar(
         leading: IconButton(
           icon: Icon(LucideIcons.chevronLeft,
               color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary, size: 20),
@@ -106,7 +104,7 @@ class _AppointmentsBody extends StatelessWidget {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: 3,
-      itemBuilder: (_, __) => Container(
+      itemBuilder: (_, _) => Container(
         height: 120,
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(

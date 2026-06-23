@@ -1,3 +1,4 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/clinics_repository.dart';
 import '../../data/models/clinic.dart';
@@ -53,7 +54,7 @@ class ClinicsCubit extends Cubit<ClinicsState> {
         activeTypeFilter: _currentType,
       ));
     } catch (e) {
-      emit(ClinicsError(e.toString()));
+      emit(ClinicsError(ExceptionHandler.handle(e).message));
     }
   }
 

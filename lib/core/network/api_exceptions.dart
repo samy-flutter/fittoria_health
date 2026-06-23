@@ -17,44 +17,42 @@ class ApiException implements Exception {
 
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
-        message = 'Connection timeout. Please check your internet connection.';
+        message = 'We couldn\'t connect to the server. Please check your internet connection and try again.';
         break;
       case DioExceptionType.sendTimeout:
-        message = 'Send timeout. Please try again.';
-        break;
       case DioExceptionType.receiveTimeout:
-        message = 'Receive timeout. Please try again.';
+        message = 'The server took too long to respond. Please try again.';
         break;
       case DioExceptionType.badResponse:
         if (statusCode != null) {
           if (statusCode == 400) {
-            message = _getErrorMessage(data) ?? 'Invalid request details.';
+            message = _getErrorMessage(data) ?? 'There was a problem with your request. Please check your details.';
           } else if (statusCode == 401) {
-            message = 'Session expired. Please log in again.';
+            message = _getErrorMessage(data) ?? 'Your session has expired. Please log in again to continue.';
           } else if (statusCode == 403) {
-            message = 'Access forbidden.';
+            message = 'You do not have permission to access this.';
           } else if (statusCode == 404) {
-            message = 'Requested resource not found.';
+            message = 'The requested information could not be found.';
           } else if (statusCode == 422) {
-            message = _getErrorMessage(data) ?? 'Validation error occurred.';
+            message = _getErrorMessage(data) ?? 'Please check the information you provided and try again.';
           } else if (statusCode == 423) {
-            message = 'Account temporarily locked due to too many failed attempts.';
+            message = 'Your account is temporarily locked due to too many failed attempts. Please try again later.';
           } else if (statusCode == 429) {
             final retrySec = data?['error']?['retryAfterSec'] ?? 900;
             final mins = (retrySec / 60).ceil();
-            message = 'Too many attempts. Try again in $mins minute${mins != 1 ? "s" : ""}.';
+            message = 'You\'ve made too many attempts. Please try again in $mins minute${mins != 1 ? "s" : ""}.';
           } else if (statusCode >= 500) {
-            message = 'Internal server error. Please try again later.';
+            message = _getErrorMessage(data) ?? 'Our servers are currently experiencing issues. Please try again later.';
           }
         }
         break;
       case DioExceptionType.cancel:
-        message = 'Request cancelled.';
+        message = 'The request was cancelled.';
         break;
       case DioExceptionType.connectionError:
       case DioExceptionType.unknown:
       default:
-        message = 'Network error. Please verify your connection.';
+        message = 'A network error occurred. Please verify your internet connection.';
         break;
     }
 

@@ -24,7 +24,7 @@ class _SleepScreenState extends State<SleepScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     const accentColor = Color(0xFF8B5CF6);
 
     return Scaffold(
@@ -37,17 +37,24 @@ class _SleepScreenState extends State<SleepScreen> {
       body: BlocBuilder<SleepCubit, SleepState>(
         builder: (context, state) {
           if (state is SleepInitial || state is SleepLoading) {
-            return const Center(child: CircularProgressIndicator(color: accentColor));
+            return const Center(
+              child: CircularProgressIndicator(color: accentColor),
+            );
           }
           if (state is SleepError) {
-            return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
+            return Center(
+              child: Text(
+                state.message,
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
           }
           if (state is SleepLoaded) {
             final data = state.data;
 
             return RefreshIndicator(
               color: accentColor,
-              onRefresh: () => context.read<SleepCubit>().load(),
+              onRefresh: () => context.read<SleepCubit>().load(silently: true),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -87,7 +94,13 @@ class _SleepScreenState extends State<SleepScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('${hours}h ${minutes}m', style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+              Text(
+                '${hours}h ${minutes}m',
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 16),
               const Text('Hours'),
               Slider(
@@ -106,7 +119,10 @@ class _SleepScreenState extends State<SleepScreen> {
                 onChanged: (v) => setState(() => minutes = v.toInt()),
               ),
               const SizedBox(height: 16),
-              const Text('Quality', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Quality',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -114,7 +130,7 @@ class _SleepScreenState extends State<SleepScreen> {
                   return ChoiceChip(
                     label: Text(q),
                     selected: quality == q,
-                    selectedColor: accentColor.withValues(alpha: 0.2),
+                    selectedColor: accentColor,
                     onSelected: (s) {
                       if (s) setState(() => quality = q);
                     },
@@ -124,15 +140,29 @@ class _SleepScreenState extends State<SleepScreen> {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dContext), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(dContext),
+              child: const Text('Cancel'),
+            ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: accentColor),
               onPressed: () {
                 final total = (hours * 60) + minutes;
-                int deep = quality == 'Good' ? (total * 0.3).toInt() : (quality == 'Fair' ? (total * 0.2).toInt() : (total * 0.1).toInt());
+                int deep = quality == 'Good'
+                    ? (total * 0.3).toInt()
+                    : (quality == 'Fair'
+                          ? (total * 0.2).toInt()
+                          : (total * 0.1).toInt());
                 int rem = (total * 0.25).toInt();
                 int light = total - deep - rem - 10;
-                this.context.read<SleepCubit>().log(DateTime.now(), total, rem, light, deep, 10);
+                this.context.read<SleepCubit>().log(
+                  DateTime.now(),
+                  total,
+                  rem,
+                  light,
+                  deep,
+                  10,
+                );
                 Navigator.pop(dContext);
               },
               child: const Text('Save', style: TextStyle(color: Colors.white)),
@@ -143,7 +173,7 @@ class _SleepScreenState extends State<SleepScreen> {
     );
   }
 
-  Widget _buildStatsGrid(data, bool isDark) {
+  Widget _buildStatsGrid(dynamic data, bool isDark) {
     return GridView.count(
       crossAxisCount: 2,
       crossAxisSpacing: 12,
@@ -152,8 +182,20 @@ class _SleepScreenState extends State<SleepScreen> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        _MetricCard(title: 'Avg Sleep', value: data.avgDuration, unit: '', icon: LucideIcons.moon, color: const Color(0xFF8B5CF6)),
-        _MetricCard(title: 'Sleep Score', value: data.sleepScore, unit: '', icon: LucideIcons.star, color: const Color(0xFFF59E0B)),
+        _MetricCard(
+          title: 'Avg Sleep',
+          value: data.avgDuration,
+          unit: '',
+          icon: LucideIcons.moon,
+          color: const Color(0xFF8B5CF6),
+        ),
+        _MetricCard(
+          title: 'Sleep Score',
+          value: data.sleepScore,
+          unit: '',
+          icon: LucideIcons.star,
+          color: const Color(0xFFF59E0B),
+        ),
       ],
     );
   }
@@ -166,15 +208,23 @@ class _SleepScreenState extends State<SleepScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
         borderRadius: AppRadius.borderXl,
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('This Week', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          const Text(
+            'This Week',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
           const SizedBox(height: 24),
           if (history.isEmpty)
-            const Padding(padding: EdgeInsets.symmetric(vertical: 32), child: Center(child: Text('No sleep data.')))
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(child: Text('No sleep data.')),
+            )
           else
             SizedBox(
               height: 150,
@@ -189,26 +239,49 @@ class _SleepScreenState extends State<SleepScreen> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          if (value.toInt() >= history.length) return const SizedBox.shrink();
+                          if (value.toInt() >= history.length) {
+                            return const SizedBox.shrink();
+                          }
                           final d = history[value.toInt()];
-                          final title = DateFormat('E').format(d.date).substring(0, 1);
+                          final title = DateFormat(
+                            'E',
+                          ).format(d.date).substring(0, 1);
                           return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(title, style: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, fontSize: 10)),
+                            child: Text(
+                              title,
+                              style: TextStyle(
+                                color: isDark
+                                    ? AppColors.darkTextMuted
+                                    : AppColors.lightTextMuted,
+                                fontSize: 10,
+                              ),
+                            ),
                           );
                         },
                         reservedSize: 28,
                       ),
                     ),
-                    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
                     horizontalInterval: 120, // 2 hours
-                    getDrawingHorizontalLine: (value) => FlLine(color: isDark ? AppColors.darkBorder : AppColors.lightBorder, strokeWidth: 1),
+                    getDrawingHorizontalLine: (value) => FlLine(
+                      color: isDark
+                          ? AppColors.darkBorder
+                          : AppColors.lightBorder,
+                      strokeWidth: 1,
+                    ),
                   ),
                   borderData: FlBorderData(show: false),
                   barGroups: List.generate(history.length, (i) {
@@ -238,47 +311,91 @@ class _SleepScreenState extends State<SleepScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
         borderRadius: AppRadius.borderXl,
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: const Text('Recent Logs', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            child: const Text(
+              'Recent Logs',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
           ),
-          Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+          Divider(
+            height: 1,
+            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+          ),
           if (data.history.isEmpty)
             Padding(
               padding: const EdgeInsets.all(32),
-              child: Center(child: Text('No readings logged.', style: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, fontSize: 12))),
+              child: Center(
+                child: Text(
+                  'No readings logged.',
+                  style: TextStyle(
+                    color: isDark
+                        ? AppColors.darkTextMuted
+                        : AppColors.lightTextMuted,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
             )
           else
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: data.history.length,
-              separatorBuilder: (context, index) => Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+              separatorBuilder: (context, index) => Divider(
+                height: 1,
+                color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+              ),
               itemBuilder: (context, index) {
                 final r = data.history[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(DateFormat('EEEE, MMM d').format(r.date), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                          Text(
+                            DateFormat('EEEE, MMM d').format(r.date),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
                           const SizedBox(height: 4),
-                          Text('${r.durationFormatted} total', style: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, fontSize: 12)),
+                          Text(
+                            '${r.durationFormatted} total',
+                            style: TextStyle(
+                              color: isDark
+                                  ? AppColors.darkTextMuted
+                                  : AppColors.lightTextMuted,
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                       Row(
                         children: [
                           Icon(LucideIcons.moon, color: accentColor, size: 16),
                           const SizedBox(width: 8),
-                          Text(r.durationFormatted, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text(
+                            r.durationFormatted,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -299,17 +416,25 @@ class _MetricCard extends StatelessWidget {
   final IconData icon;
   final Color color;
 
-  const _MetricCard({required this.title, required this.value, required this.unit, required this.icon, required this.color});
+  const _MetricCard({
+    required this.title,
+    required this.value,
+    required this.unit,
+    required this.icon,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
         borderRadius: AppRadius.borderXl,
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -319,7 +444,7 @@ class _MetricCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: color.withValues(alpha: 0.15),
                   borderRadius: AppRadius.borderLg,
                 ),
                 child: Icon(icon, color: color, size: 14),
@@ -331,14 +456,37 @@ class _MetricCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20)),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 20,
+                ),
+              ),
               if (unit.isNotEmpty) ...[
                 const SizedBox(width: 4),
-                Text(unit, style: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, fontSize: 12)),
+                Text(
+                  unit,
+                  style: TextStyle(
+                    color: isDark
+                        ? AppColors.darkTextMuted
+                        : AppColors.lightTextMuted,
+                    fontSize: 12,
+                  ),
+                ),
               ],
             ],
           ),
-          Text(title, style: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, fontSize: 12, fontWeight: FontWeight.w500)),
+          Text(
+            title,
+            style: TextStyle(
+              color: isDark
+                  ? AppColors.darkTextMuted
+                  : AppColors.lightTextMuted,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );

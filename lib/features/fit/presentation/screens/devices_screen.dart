@@ -1,3 +1,4 @@
+import '../../../../core/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -7,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../cubit/devices_cubit.dart';
 import '../../data/models/fitness_hub_models.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class DevicesScreen extends StatefulWidget {
   const DevicesScreen({super.key});
@@ -43,16 +45,13 @@ class _DevicesScreenState extends State<DevicesScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Connected Devices'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: BlocConsumer<DevicesCubit, DevicesState>(
         listener: (context, state) {
           if (state is DevicesError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+            UIHelpers.showErrorSnackBar(context, state.message);
           }
         },
         builder: (context, state) {
@@ -149,14 +148,12 @@ class _DevicesScreenState extends State<DevicesScreen> {
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: connected ? Colors.transparent : AppColors.fitOrange,
                               foregroundColor: connected ? (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted) : Colors.white,
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                               shape: RoundedRectangleBorder(
                                 borderRadius: AppRadius.borderLg,
                                 side: connected ? BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder) : BorderSide.none,
                               ),
-                              elevation: 0,
                               minimumSize: const Size(0, 36),
                             ),
                             onPressed: () => _toggleConnection(providerKey, p['name'] as String, connected),

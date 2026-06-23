@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -9,6 +8,7 @@ import '../../../../injection_container.dart';
 import '../cubit/club_chat_cubit.dart';
 import '../cubit/club_chat_state.dart';
 import '../../data/models/club_models.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class ClubChatScreen extends StatelessWidget {
   final int clubId;
@@ -64,14 +64,7 @@ class _ClubChatViewState extends State<_ClubChatView> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
-        elevation: 1,
-        leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-          onPressed: () => context.pop(),
-        ),
+      appBar: CustomAppBar(
         title: Row(
           children: [
             CircleAvatar(

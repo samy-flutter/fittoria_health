@@ -10,6 +10,7 @@ import '../../../../injection_container.dart';
 import '../cubit/clubs_cubit.dart';
 import '../cubit/clubs_state.dart';
 import '../../data/models/club_models.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class ClubsScreen extends StatelessWidget {
   const ClubsScreen({super.key});
@@ -31,14 +32,7 @@ class _ClubsView extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-          onPressed: () => context.pop(),
-        ),
+      appBar: CustomAppBar(
         title: Row(
           children: [
             Container(
@@ -224,7 +218,6 @@ class _ClubCard extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.fitOrange,
                             foregroundColor: Colors.white,
-                            elevation: 0,
                             shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
@@ -262,7 +255,6 @@ class _ClubCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.fitOrange,
                         foregroundColor: Colors.white,
-                        elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),

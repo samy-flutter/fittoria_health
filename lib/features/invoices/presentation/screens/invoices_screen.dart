@@ -1,3 +1,4 @@
+import '../../../../core/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -6,6 +7,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../bloc/invoices_cubit.dart';
 import '../bloc/invoices_state.dart';
 import '../../data/models/invoice.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class InvoicesScreen extends StatefulWidget {
   const InvoicesScreen({super.key});
@@ -26,33 +28,20 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('My Invoices', style: TextStyle(fontWeight: FontWeight.bold)),
-        elevation: 0,
-        backgroundColor: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
         foregroundColor: isDark ? Colors.white : AppColors.lightTextPrimary,
       ),
       body: BlocListener<InvoicesCubit, InvoicesState>(
         listener: (context, state) {
           if (state is InvoicesLoaded) {
             if (state.successMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.successMessage!),
-                  backgroundColor: AppColors.success,
-                ),
-              );
-              context.read<InvoicesCubit>().clearMessages();
+              UIHelpers.showSuccessSnackBar(context, state.successMessage!);
+context.read<InvoicesCubit>().clearMessages();
             }
             if (state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage!),
-                  backgroundColor: AppColors.danger,
-                ),
-              );
-              context.read<InvoicesCubit>().clearMessages();
+              UIHelpers.showErrorSnackBar(context, state.errorMessage!);
+context.read<InvoicesCubit>().clearMessages();
             }
           }
         },
@@ -390,7 +379,6 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isDark ? AppColors.darkTeal : AppColors.lightTeal,
                       foregroundColor: Colors.white,
-                      elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       textStyle: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold),

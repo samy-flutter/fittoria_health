@@ -18,6 +18,8 @@ abstract class AuthRemoteDataSource {
   });
 
   Future<void> logout();
+
+  Future<void> forgotPassword(String identifier);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -79,6 +81,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       await _client.post(ApiEndpoints.logout);
     } on DioException catch (_) {
       // If logging out fails on network side, we swallow the error since the client must still log out locally.
+    }
+  }
+
+  @override
+  Future<void> forgotPassword(String identifier) async {
+    try {
+      await _client.post(
+        ApiEndpoints.forgotPassword,
+        data: {'identifier': identifier},
+      );
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
     }
   }
 }

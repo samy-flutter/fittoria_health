@@ -1,6 +1,6 @@
+import '../../../../core/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -10,6 +10,7 @@ import '../../../../injection_container.dart';
 import '../cubit/lab_booking_cubit.dart';
 import '../cubit/lab_booking_state.dart';
 import '../../data/models/lab_booking_model.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class LabBookingScreen extends StatelessWidget {
   const LabBookingScreen({super.key});
@@ -44,14 +45,7 @@ class _LabBookingViewState extends State<_LabBookingView> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-          onPressed: () => context.pop(),
-        ),
+      appBar: CustomAppBar(
         title: Row(
           children: [
             Container(
@@ -91,14 +85,8 @@ class _LabBookingViewState extends State<_LabBookingView> {
           if (state is LabBookingLoaded && state.createSuccess) {
             _toggleForm(false);
             context.read<LabBookingCubit>().resetSuccess();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Booking confirmed successfully', style: GoogleFonts.inter()),
-                backgroundColor: Colors.green,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
+            UIHelpers.showSuccessSnackBar(context, 'Booking confirmed successfully');
+}
         },
         builder: (context, state) {
           if (state is LabBookingInitial || state is LabBookingLoading) {

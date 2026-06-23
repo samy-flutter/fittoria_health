@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'failures.dart';
 import '../network/api_exceptions.dart';
@@ -10,7 +11,11 @@ class ExceptionHandler {
       final apiException = ApiException.fromDioError(error);
       return ServerFailure(apiException.message);
     } else {
-      return UnknownFailure(error.toString());
+      // Log the actual error internally (e.g. TypeError, json mapping error)
+      debugPrint('Unhandled Exception: $error');
+      
+      // Return a clean, generic message to the user
+      return ServerFailure('Something went wrong processing the data. Please try again.');
     }
   }
 }

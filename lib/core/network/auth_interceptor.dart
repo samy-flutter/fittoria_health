@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../storage/secure_storage.dart';
 import '../storage/preferences_helper.dart';
 import 'api_endpoints.dart';
+import '../logging/app_logger.dart';
 
 class AuthInterceptor extends Interceptor {
   final SecureStorage _secureStorage;
@@ -71,9 +72,11 @@ class AuthInterceptor extends Interceptor {
     }
 
     try {
-      // Perform token refresh operation
       final response = await _refreshDio.post(
         ApiEndpoints.refresh,
+        options: Options(headers: {
+          'Authorization': 'Bearer $refreshToken',
+        }),
         data: {
           'sessionId': sessionId,
           'refreshToken': refreshToken,
@@ -130,6 +133,7 @@ class AuthInterceptor extends Interceptor {
       }
     } catch (e) {
       // Log out patient if refresh token fails or is expired
+      AppLogger.e('Token refresh failed', e.toString());
       await _handleLogout();
       handler.next(err);
     } finally {

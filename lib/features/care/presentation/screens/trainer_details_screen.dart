@@ -8,6 +8,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../injection_container.dart';
 import '../cubit/fitness_details_cubit.dart';
 import '../../data/models/fitness_details_model.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class TrainerDetailsScreen extends StatelessWidget {
   const TrainerDetailsScreen({super.key});
@@ -29,12 +30,9 @@ class _TrainerDetailsScreenView extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('My Trainer'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: BlocBuilder<FitnessDetailsCubit, FitnessDetailsState>(
         builder: (context, state) {
           if (state is FitnessDetailsLoading) {
@@ -233,7 +231,7 @@ class _TrainerDetailsScreenView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: tracking.compliance > 80 ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+              color: tracking.compliance > 80 ? Colors.green.withValues(alpha: 0.1) : Colors.orange.withValues(alpha: 0.1),
               borderRadius: AppRadius.borderMd,
             ),
             child: Text(

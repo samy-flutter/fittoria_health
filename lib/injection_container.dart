@@ -13,6 +13,7 @@ import 'features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/cubit/forgot_password_cubit.dart';
 
 // Features - Appointments
 import 'features/appointments/data/data_sources/appointments_remote_data_source.dart';
@@ -128,6 +129,7 @@ import 'features/lab_booking/presentation/cubit/lab_booking_cubit.dart';
 // Features - Shop
 import 'features/shop/domain/repositories/shop_repository.dart';
 import 'features/shop/data/repositories/shop_repository_impl.dart';
+import 'features/shop/data/data_sources/shop_remote_data_source.dart';
 import 'features/shop/presentation/cubit/shop_cubit.dart';
 
 // Features - Academy
@@ -135,6 +137,7 @@ import 'features/academy/data/data_sources/academy_remote_data_source.dart';
 import 'features/academy/domain/repositories/academy_repository.dart';
 import 'features/academy/data/repositories/academy_repository_impl.dart';
 import 'features/academy/presentation/cubit/academy_cubit.dart';
+import 'features/fit/data/data_sources/pedometer_local_data_source.dart';
 import 'features/fit/domain/repositories/fit_repository.dart';
 import 'features/fit/data/repositories/fit_repository_impl.dart';
 import 'features/fit/presentation/cubit/activity_cubit.dart';
@@ -147,7 +150,7 @@ Future<void> init() async {
   // --- External Dependencies ---
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
-  
+
   const secureStorage = FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
@@ -156,7 +159,7 @@ Future<void> init() async {
   // --- Core Services & Helpers ---
   sl.registerLazySingleton<PreferencesHelper>(() => PreferencesHelper(sl()));
   sl.registerLazySingleton<SecureStorage>(() => SecureStorage(sl()));
-  
+
   // Auth state notifier for routing rebuilds
   sl.registerLazySingleton<AuthStatusNotifier>(() => AuthStatusNotifier(sl()));
 
@@ -169,38 +172,65 @@ Future<void> init() async {
   sl.registerFactory(() => ThemeCubit(sl()));
 
   // --- Features ---
-  
+
   // Auth
-  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl(), sl(), sl(), sl()));
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(sl(), sl(), sl(), sl()),
+  );
   sl.registerFactory(() => AuthBloc(sl()));
+  sl.registerFactory(() => ForgotPasswordCubit(sl()));
 
   // Appointments
-  sl.registerLazySingleton<AppointmentsRemoteDataSource>(() => AppointmentsRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<AppointmentsRepository>(() => AppointmentsRepositoryImpl(sl()));
+  sl.registerLazySingleton<AppointmentsRemoteDataSource>(
+    () => AppointmentsRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<AppointmentsRepository>(
+    () => AppointmentsRepositoryImpl(sl()),
+  );
   sl.registerFactory(() => AppointmentsBloc(sl()));
 
   // Clinics
-  sl.registerLazySingleton<ClinicsRemoteDataSource>(() => ClinicsRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<ClinicsRepository>(() => ClinicsRepositoryImpl(sl()));
+  sl.registerLazySingleton<ClinicsRemoteDataSource>(
+    () => ClinicsRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<ClinicsRepository>(
+    () => ClinicsRepositoryImpl(sl()),
+  );
   sl.registerFactory(() => ClinicsCubit(sl()));
 
   // Booking
-  sl.registerLazySingleton<BookingRemoteDataSource>(() => BookingRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<BookingRepository>(() => BookingRepositoryImpl(sl()));
+  sl.registerLazySingleton<BookingRemoteDataSource>(
+    () => BookingRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<BookingRepository>(
+    () => BookingRepositoryImpl(sl()),
+  );
   sl.registerFactory(() => BookingBloc(sl()));
 
   // Lab
-  sl.registerLazySingleton<LabRemoteDataSource>(() => LabRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<LabRemoteDataSource>(
+    () => LabRemoteDataSourceImpl(sl()),
+  );
   sl.registerLazySingleton<LabRepository>(() => LabRepositoryImpl(sl()));
   sl.registerFactory(() => LabReferralsBloc(sl()));
   sl.registerFactory(() => LabReportsCubit(sl()));
 
   // Profile & Records
-  sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(sl()));
-  sl.registerLazySingleton<RecordsRemoteDataSource>(() => RecordsRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<RecordsRepository>(() => RecordsRepositoryImpl(sl()));
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton<RecordsRemoteDataSource>(
+    () => RecordsRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<RecordsRepository>(
+    () => RecordsRepositoryImpl(sl()),
+  );
   sl.registerFactory(() => RecordsCubit(sl()));
   sl.registerFactory(() => ProfileCubit(sl()));
 
@@ -212,21 +242,32 @@ Future<void> init() async {
   sl.registerFactory(() => WorkoutsCubit(sl()));
 
   // Invoices
-  sl.registerLazySingleton<InvoicesRemoteDataSource>(() => InvoicesRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<InvoicesRepository>(() => InvoicesRepositoryImpl(sl()));
+  sl.registerLazySingleton<InvoicesRemoteDataSource>(
+    () => InvoicesRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<InvoicesRepository>(
+    () => InvoicesRepositoryImpl(sl()),
+  );
   sl.registerFactory(() => InvoicesCubit(sl()));
 
   // Prescriptions
   sl.registerLazySingleton<PrescriptionsRemoteDataSource>(
-      () => PrescriptionsRemoteDataSourceImpl(sl()));
+    () => PrescriptionsRemoteDataSourceImpl(sl()),
+  );
   sl.registerLazySingleton<ReportsRemoteDataSource>(
-      () => ReportsRemoteDataSourceImpl(sl()));
+    () => ReportsRemoteDataSourceImpl(sl()),
+  );
   sl.registerLazySingleton<CareRemoteDataSource>(
-      () => CareRemoteDataSourceImpl(sl()));
+    () => CareRemoteDataSourceImpl(sl()),
+  );
 
   // Repositories
-  sl.registerLazySingleton<PrescriptionsRepository>(() => PrescriptionsRepositoryImpl(sl()));
-  sl.registerLazySingleton<ReportsRepository>(() => ReportsRepositoryImpl(sl()));
+  sl.registerLazySingleton<PrescriptionsRepository>(
+    () => PrescriptionsRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton<ReportsRepository>(
+    () => ReportsRepositoryImpl(sl()),
+  );
   sl.registerLazySingleton<CareRepository>(() => CareRepositoryImpl(sl()));
   sl.registerFactory(() => PrescriptionsCubit(sl()));
   sl.registerFactory(() => ReportsCubit(sl()));
@@ -236,25 +277,35 @@ Future<void> init() async {
   sl.registerFactory(() => MeetingsCubit(sl()));
 
   // Data Sources
-  sl.registerLazySingleton<FitnessRemoteDataSource>(() => FitnessRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<FitnessRepository>(() => FitnessRepositoryImpl(sl()));
+  sl.registerLazySingleton<FitnessRemoteDataSource>(
+    () => FitnessRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<FitnessRepository>(
+    () => FitnessRepositoryImpl(sl()),
+  );
 
   // Dashboard — receives profile, appointments, fitness repositories
-  sl.registerFactory(() => DashboardCubit(sl(), sl(), sl()));
+  sl.registerFactory(() => DashboardCubit(sl(), sl(), sl(), sl()));
 
   // Community  // Social / Community
-  sl.registerLazySingleton<SocialRemoteDataSource>(() => SocialRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<SocialRemoteDataSource>(
+    () => SocialRemoteDataSourceImpl(sl()),
+  );
   sl.registerLazySingleton<SocialRepository>(() => SocialRepositoryImpl(sl()));
   sl.registerFactory(() => SocialCubit(sl()));
   sl.registerFactory(() => SocialCommentsCubit(sl()));
 
-  sl.registerLazySingleton<ClubsRemoteDataSource>(() => ClubsRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<ClubsRemoteDataSource>(
+    () => ClubsRemoteDataSourceImpl(sl()),
+  );
   sl.registerLazySingleton<ClubsRepository>(() => ClubsRepositoryImpl(sl()));
   sl.registerFactory(() => ClubsCubit(sl()));
   sl.registerFactory(() => ClubChatCubit(sl()));
 
   // Events
-  sl.registerLazySingleton<EventsRemoteDataSource>(() => EventsRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<EventsRemoteDataSource>(
+    () => EventsRemoteDataSourceImpl(sl()),
+  );
   sl.registerLazySingleton<EventsRepository>(() => EventsRepositoryImpl(sl()));
   sl.registerFactory(() => EventsCubit(sl()));
 
@@ -263,29 +314,51 @@ Future<void> init() async {
   sl.registerFactory(() => TrainersCubit(sl()));
 
   // AI Nutrition
-  sl.registerLazySingleton<AiNutritionRepository>(() => AiNutritionRepositoryImpl());
+  sl.registerLazySingleton<AiNutritionRepository>(
+    () => AiNutritionRepositoryImpl(),
+  );
   sl.registerFactory(() => AiNutritionCubit(sl()));
 
   // Achievements
-  sl.registerLazySingleton<AchievementsRemoteDataSource>(() => AchievementsRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<AchievementsRepository>(() => AchievementsRepositoryImpl(sl()));
+  sl.registerLazySingleton<AchievementsRemoteDataSource>(
+    () => AchievementsRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<AchievementsRepository>(
+    () => AchievementsRepositoryImpl(sl()),
+  );
   sl.registerFactory(() => AchievementsCubit(sl()));
 
   // Lab Booking
-  sl.registerLazySingleton<LabBookingRepository>(() => LabBookingRepositoryImpl());
+  sl.registerLazySingleton<LabBookingRepository>(
+    () => LabBookingRepositoryImpl(),
+  );
   sl.registerFactory(() => LabBookingCubit(sl()));
 
   // Shop
-  sl.registerLazySingleton<ShopRepository>(() => ShopRepositoryImpl());
+  sl.registerLazySingleton<ShopRemoteDataSource>(
+    () => ShopRemoteDataSourceImpl(dioClient: sl()),
+  );
+  sl.registerLazySingleton<ShopRepository>(
+    () => ShopRepositoryImpl(remoteDataSource: sl()),
+  );
   sl.registerFactory(() => ShopCubit(sl()));
 
   // Academy
-  sl.registerLazySingleton<AcademyRemoteDataSource>(() => AcademyRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<AcademyRepository>(() => AcademyRepositoryImpl(sl()));
+  sl.registerLazySingleton<AcademyRemoteDataSource>(
+    () => AcademyRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<AcademyRepository>(
+    () => AcademyRepositoryImpl(sl()),
+  );
   sl.registerFactory(() => AcademyCubit(repository: sl(), audience: 'patient'));
 
   // Fit
-  sl.registerLazySingleton<FitRepository>(() => FitRepositoryImpl());
+  sl.registerLazySingleton<LocalActivityDataSource>(
+    () => PedometerLocalDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<FitRepository>(
+    () => FitRepositoryImpl(healthDataSource: sl()),
+  );
   sl.registerFactory(() => ActivityCubit(sl()));
   sl.registerFactory(() => HeartRateCubit(sl()));
   sl.registerFactory(() => SleepCubit(sl()));

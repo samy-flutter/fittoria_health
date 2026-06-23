@@ -9,6 +9,7 @@ import '../../../../injection_container.dart';
 import '../bloc/lab_reports_cubit.dart';
 import '../bloc/lab_reports_state.dart';
 import '../../data/models/lab_report.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class LabReportsScreen extends StatelessWidget {
   const LabReportsScreen({super.key});
@@ -47,10 +48,7 @@ class _LabReportsBodyState extends State<_LabReportsBody> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: CustomAppBar(
         leading: IconButton(
           icon: Icon(LucideIcons.chevronLeft,
               color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary, size: 20),
@@ -219,7 +217,7 @@ class _LabReportsBodyState extends State<_LabReportsBody> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: orders.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (context, idx) {
                         final o = orders[idx];
                         final isExpanded = _expandedIds.contains(o.id);

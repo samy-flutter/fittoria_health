@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../injection_container.dart';
 import '../bloc/reports_cubit.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class ReportsScreen extends StatelessWidget {
   const ReportsScreen({super.key});
@@ -28,12 +29,9 @@ class _ReportsScreenView extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Coach & Dietitian Reports'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: BlocBuilder<ReportsCubit, ReportsState>(
         builder: (context, state) {
           if (state is ReportsLoading) {
@@ -74,7 +72,8 @@ class _ReportsScreenView extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     FilledButton(
-                      onPressed: () => context.read<ReportsCubit>().loadReports(),
+                      onPressed: () =>
+                          context.read<ReportsCubit>().loadReports(),
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.fitOrange,
                       ),
@@ -132,7 +131,7 @@ class _ReportsScreenView extends StatelessWidget {
               child: ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: reports.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final report = reports[index];
                   final isTrainer = report.source == 'trainer';
@@ -158,12 +157,14 @@ class _ReportsScreenView extends StatelessWidget {
                           height: 48,
                           decoration: BoxDecoration(
                             color: isTrainer
-                                ? const Color(0xFF22C55E).withOpacity(0.1)
-                                : const Color(0xFFA78BFA).withOpacity(0.1),
+                                ? const Color(0xFF22C55E).withValues(alpha: 0.1)
+                                : const Color(0xFFA78BFA).withValues(alpha: 0.1),
                             borderRadius: AppRadius.borderLg,
                           ),
                           child: Icon(
-                            isTrainer ? LucideIcons.dumbbell : LucideIcons.salad,
+                            isTrainer
+                                ? LucideIcons.dumbbell
+                                : LucideIcons.salad,
                             color: isTrainer
                                 ? const Color(0xFF22C55E)
                                 : const Color(0xFFA78BFA),

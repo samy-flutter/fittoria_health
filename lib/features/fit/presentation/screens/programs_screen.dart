@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../routes/route_names.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class ProgramsScreen extends StatefulWidget {
   const ProgramsScreen({super.key});
@@ -34,12 +35,9 @@ class _ProgramsScreenState extends State<ProgramsScreen> {
     final featured = _programs[0];
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Programs'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -13,6 +13,7 @@ import '../../../../injection_container.dart';
 import '../bloc/booking_bloc.dart';
 import '../bloc/booking_event.dart';
 import '../bloc/booking_state.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 const List<String> _timeSlots = [
   '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
@@ -64,10 +65,7 @@ class _BookingBodyState extends State<_BookingBody> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: CustomAppBar(
         leading: IconButton(
           icon: Icon(LucideIcons.chevronLeft,
               color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary, size: 20),
@@ -817,8 +815,7 @@ class _BookingBodyState extends State<_BookingBody> {
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: AppRadius.borderXl),
-                  elevation: 0,
-                ),
+                  ),
               ),
             ),
           ],
@@ -862,8 +859,7 @@ class _BookingBodyState extends State<_BookingBody> {
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(borderRadius: AppRadius.borderXl),
-              elevation: 0,
-            ),
+              ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -997,8 +993,7 @@ class _BookingBodyState extends State<_BookingBody> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: AppRadius.borderXl),
-                        elevation: 0,
-                      ),
+                        ),
                       child: const Text('My Appointments', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                     ),
                   ),

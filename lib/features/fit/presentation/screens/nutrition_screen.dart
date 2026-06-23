@@ -1,9 +1,11 @@
+import '../../../../core/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class NutritionScreen extends StatefulWidget {
   const NutritionScreen({super.key});
@@ -43,21 +45,13 @@ class _NutritionScreenState extends State<NutritionScreen> {
   void _saveLog() {
     if (_foodNameController.text.isEmpty) return;
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Food logged successfully!', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF22C55E),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
-      ),
-    );
-  }
+    UIHelpers.showSuccessSnackBar(context, 'Food logged successfully!');
+}
 
   void _showAddFoodModal(BuildContext context, bool isDark) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (ctx) {
         return StatefulBuilder(
           builder: (context, setModalState) {
@@ -196,12 +190,9 @@ class _NutritionScreenState extends State<NutritionScreen> {
     const accentColor = Color(0xFF22C55E);
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Nutrition'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+        ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -248,7 +239,7 @@ class _NutritionScreenState extends State<NutritionScreen> {
                       fit: StackFit.expand,
                       children: [
                         CircularProgressIndicator(value: 1.0, strokeWidth: 8, color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
-                        CircularProgressIndicator(value: 850 / 2000, strokeWidth: 8, backgroundColor: Colors.transparent, color: accentColor, strokeCap: StrokeCap.round),
+                        CircularProgressIndicator(value: 850 / 2000, strokeWidth: 8, color: accentColor, strokeCap: StrokeCap.round),
                         Center(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -284,8 +275,7 @@ class _NutritionScreenState extends State<NutritionScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accentColor,
                   shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
-                  elevation: 0,
-                ),
+                  ),
                 onPressed: () => _showAddFoodModal(context, isDark),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -328,7 +318,6 @@ class _NutritionScreenState extends State<NutritionScreen> {
           child: LinearProgressIndicator(
             value: value / maxVal,
             minHeight: 8,
-            backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),

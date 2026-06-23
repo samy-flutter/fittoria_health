@@ -19,8 +19,8 @@ class HeartRateCubit extends Cubit<HeartRateState> {
   final FitRepository repository;
   HeartRateCubit(this.repository) : super(HeartRateInitial());
 
-  Future<void> load() async {
-    emit(HeartRateLoading());
+  Future<void> load({bool silently = false}) async {
+    if (!silently) emit(HeartRateLoading());
     final result = await repository.getHeartRate();
     result.fold(
       (Failure f) => emit(HeartRateError(f.message)),
@@ -30,6 +30,6 @@ class HeartRateCubit extends Cubit<HeartRateState> {
 
   Future<void> log(int bpm, String type) async {
     await repository.logHeartRate(bpm, type);
-    await load();
+    await load(silently: true);
   }
 }

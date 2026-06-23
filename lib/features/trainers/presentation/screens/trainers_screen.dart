@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -10,6 +9,7 @@ import '../../../../injection_container.dart';
 import '../cubit/trainers_cubit.dart';
 import '../cubit/trainers_state.dart';
 import '../../data/models/trainer_models.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class TrainersScreen extends StatelessWidget {
   const TrainersScreen({super.key});
@@ -44,14 +44,7 @@ class _TrainersViewState extends State<_TrainersView> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-          onPressed: () => context.pop(),
-        ),
+      appBar: CustomAppBar(
         title: Row(
           children: [
             Container(
@@ -322,7 +315,6 @@ class _TrainerCard extends StatelessWidget {
     showModalBottomSheet(
       context: parentContext,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) {
         return BlocProvider.value(
           value: parentContext.read<TrainersCubit>()..resetBookingState(),

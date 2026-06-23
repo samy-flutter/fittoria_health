@@ -1,3 +1,4 @@
+import '../../../../core/error/exception_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/auth_repository.dart';
 import 'auth_event.dart';
@@ -39,7 +40,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthAuthenticated(response));
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(ExceptionHandler.handle(e).message));
     }
   }
 
@@ -79,7 +80,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       
       emit(const RegisterSuccess('Registration successful! Please sign in.'));
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(ExceptionHandler.handle(e).message));
     }
   }
 
@@ -109,7 +110,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _authRepository.logout();
       emit(AuthInitial());
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(ExceptionHandler.handle(e).message));
     }
   }
 }

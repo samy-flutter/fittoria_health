@@ -168,7 +168,10 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: RouteNames.patientDashboard,
-                builder: (context, state) => const DashboardScreen(),
+                builder: (context, state) => BlocProvider.value(
+                  value: sl<GoalsCubit>(),
+                  child: const DashboardScreen(),
+                ),
               ),
             ],
           ),
@@ -214,16 +217,17 @@ class AppRouter {
                 path: RouteNames.patientMore,
                 builder: (context, state) => const MoreHubScreen(),
               ),
-              GoRoute(
-                path: RouteNames.patientProfile,
-                builder: (context, state) => BlocProvider(
-                  create: (_) => sl<ProfileCubit>(),
-                  child: const ProfileScreen(),
-                ),
-              ),
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: RouteNames.patientProfile,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ProfileCubit>(),
+          child: const ProfileScreen(),
+        ),
       ),
       GoRoute(
         path: RouteNames.patientBook,
@@ -422,10 +426,24 @@ class AppRouter {
       GoRoute(
         path: RouteNames.patientShopAddresses,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => BlocProvider.value(
-          value: sl<AddressesCubit>(),
-          child: const AddressesScreen(),
-        ),
+        builder: (context, state) {
+          bool isSelectionMode = false;
+          int? selectedAddressId;
+          if (state.extra is Map) {
+            final map = state.extra as Map;
+            isSelectionMode = map['isSelectionMode'] == true;
+            selectedAddressId = map['selectedAddressId'] as int?;
+          } else if (state.extra == true) {
+            isSelectionMode = true;
+          }
+          return BlocProvider.value(
+            value: sl<AddressesCubit>(),
+            child: AddressesScreen(
+              isSelectionMode: isSelectionMode,
+              selectedAddressId: selectedAddressId,
+            ),
+          );
+        },
       ),
       GoRoute(
         path: RouteNames.patientShopAddressForm,
@@ -493,8 +511,8 @@ class AppRouter {
       GoRoute(
         path: RouteNames.patientFitGoals,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => BlocProvider(
-          create: (_) => sl<GoalsCubit>(),
+        builder: (context, state) => BlocProvider.value(
+          value: sl<GoalsCubit>(),
           child: const GoalsScreen(),
         ),
       ),

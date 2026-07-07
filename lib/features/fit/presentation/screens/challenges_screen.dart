@@ -29,15 +29,16 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: CustomAppBar(
-        title: const Text('Challenges'),
-        ),
+      appBar: CustomAppBar(title: const Text('Challenges')),
       body: BlocConsumer<ChallengesCubit, ChallengesState>(
         listener: (context, state) {
           if (state is ChallengesError) {
             UIHelpers.showErrorSnackBar(context, state.message);
           } else if (state is ChallengesActionSuccess) {
-            UIHelpers.showSuccessSnackBar(context, 'Joined challenge successfully!');
+            UIHelpers.showSuccessSnackBar(
+              context,
+              'Joined challenge successfully!',
+            );
           }
         },
         builder: (context, state) {
@@ -50,7 +51,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
 
           if (state is ChallengesLoaded) {
             activeChallenges = state.challenges.where((c) => c.joined).toList();
-            availableChallenges = state.challenges.where((c) => !c.joined).toList();
+            availableChallenges = state.challenges
+                .where((c) => !c.joined)
+                .toList();
           }
 
           return SingleChildScrollView(
@@ -61,35 +64,60 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                 if (activeChallenges.isNotEmpty) ...[
                   Row(
                     children: [
-                      const Icon(LucideIcons.trophy, color: AppColors.fitOrange, size: 20),
+                      const Icon(
+                        LucideIcons.trophy,
+                        color: AppColors.fitOrange,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Active Challenges',
-                        style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.inter(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  ...activeChallenges.map((c) => _ChallengeCard(challenge: c, isActive: true)),
+                  ...activeChallenges.map(
+                    (c) => _ChallengeCard(challenge: c, isActive: true),
+                  ),
                   const SizedBox(height: 32),
                 ],
                 if (availableChallenges.isNotEmpty) ...[
                   Row(
                     children: [
-                      const Icon(LucideIcons.sparkles, color: AppColors.fitOrange, size: 20),
+                      const Icon(
+                        LucideIcons.sparkles,
+                        color: AppColors.fitOrange,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Available to Join',
-                        style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.inter(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  ...availableChallenges.map((c) => _ChallengeCard(challenge: c, isActive: false)),
+                  ...availableChallenges.map(
+                    (c) => _ChallengeCard(challenge: c, isActive: false),
+                  ),
                 ],
                 if (activeChallenges.isEmpty && availableChallenges.isEmpty)
                   Center(
-                    child: Text('No challenges available.', style: GoogleFonts.inter(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                    child: Text(
+                      'No challenges available.',
+                      style: GoogleFonts.inter(
+                        color: isDark
+                            ? AppColors.darkTextMuted
+                            : AppColors.lightTextMuted,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -110,15 +138,19 @@ class _ChallengeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentValue = challenge.currentValue ?? 0;
-    final pct = challenge.targetValue > 0 ? (currentValue / challenge.targetValue * 100).toInt() : 0;
-    
+    final pct = challenge.targetValue > 0
+        ? (currentValue / challenge.targetValue * 100).toInt()
+        : 0;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
         borderRadius: AppRadius.borderXl,
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,19 +160,29 @@ class _ChallengeCard extends StatelessWidget {
             children: [
               Text(
                 challenge.title,
-                style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 16),
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
               if (isActive)
                 Text(
                   '$pct%',
-                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.fitOrange),
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.fitOrange,
+                  ),
                 )
               else
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.fitOrange,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     minimumSize: const Size(0, 32),
                   ),
                   onPressed: () {
@@ -154,7 +196,12 @@ class _ChallengeCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               '${(challenge.currentValue ?? 0).toInt()} / ${challenge.targetValue.toInt()} ${challenge.unit} completed',
-              style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: isDark
+                    ? AppColors.darkTextMuted
+                    : AppColors.lightTextMuted,
+              ),
             ),
             const SizedBox(height: 8),
             ClipRRect(
@@ -162,6 +209,7 @@ class _ChallengeCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: (pct / 100).clamp(0.0, 1.0),
                 color: AppColors.fitOrange,
+                backgroundColor: AppColors.fitOrange.withValues(alpha: 0.15),
                 minHeight: 8,
               ),
             ),
@@ -169,7 +217,12 @@ class _ChallengeCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Goal: ${challenge.targetValue.toInt()} ${challenge.unit}',
-              style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: isDark
+                    ? AppColors.darkTextMuted
+                    : AppColors.lightTextMuted,
+              ),
             ),
           ],
         ],

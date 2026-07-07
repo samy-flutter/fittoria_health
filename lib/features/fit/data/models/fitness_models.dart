@@ -34,7 +34,7 @@ class FitToday {
   final int steps;
   final double distanceKm;
   final int caloriesKcal;
-  final int activeMinutes;
+  final double activeMinutes;
   final int waterMl;
   final int nutritionKcal;
 
@@ -42,7 +42,7 @@ class FitToday {
     this.steps = 0,
     this.distanceKm = 0,
     this.caloriesKcal = 0,
-    this.activeMinutes = 0,
+    this.activeMinutes = 0.0,
     this.waterMl = 0,
     this.nutritionKcal = 0,
   });
@@ -52,7 +52,7 @@ class FitToday {
       steps: _parseInt(json['steps']),
       distanceKm: _parseDouble(json['distance_km']),
       caloriesKcal: _parseInt(json['calories_kcal']),
-      activeMinutes: _parseInt(json['active_minutes']),
+      activeMinutes: _parseDouble(json['active_minutes']),
       waterMl: _parseInt(json['water_ml']),
       nutritionKcal: _parseInt(json['nutrition']?['kcal']),
     );

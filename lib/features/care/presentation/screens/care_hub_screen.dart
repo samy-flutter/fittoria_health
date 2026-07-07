@@ -14,10 +14,11 @@ class CareHubScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         title: const Text('Care'),
-        ),
-      body: HubGrid(
-        title: 'Care & Health',
-        subtitle: 'Your team, clinics & records',
+        isBackButtonVisible: false,
+      ),
+        body: HubGrid(
+          title: 'Care & Health',
+          subtitle: 'Your team, clinics & records',
         icon: LucideIcons.heart,
         sections: [
           HubGridSectionData(

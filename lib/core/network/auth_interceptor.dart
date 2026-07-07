@@ -74,9 +74,6 @@ class AuthInterceptor extends Interceptor {
     try {
       final response = await _refreshDio.post(
         ApiEndpoints.refresh,
-        options: Options(headers: {
-          'Authorization': 'Bearer $refreshToken',
-        }),
         data: {
           'sessionId': sessionId,
           'refreshToken': refreshToken,

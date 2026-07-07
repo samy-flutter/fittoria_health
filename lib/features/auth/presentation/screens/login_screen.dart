@@ -25,6 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _identifierController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isPhoneInput = true;
+  bool _hasSubmitted = false;
 
   @override
   void dispose() {
@@ -36,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return BlocProvider<AuthBloc>(
       create: (_) => sl<AuthBloc>(),
       child: Scaffold(
@@ -58,14 +60,20 @@ class _LoginScreenState extends State<LoginScreen> {
           builder: (context, state) {
             return SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 32.0,
+                ),
                 child: Form(
                   key: _formKey,
+                  autovalidateMode: _hasSubmitted
+                      ? AutovalidateMode.onUserInteraction
+                      : AutovalidateMode.disabled,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 24.0),
-                      
+
                       // --- Brand Header Logo ---
                       Center(
                         child: Container(
@@ -73,7 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 64.0,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [AppColors.lightTeal, AppColors.lightCyan],
+                              colors: [
+                                AppColors.lightTeal,
+                                AppColors.lightCyan,
+                              ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
@@ -83,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: AppColors.lightTeal.withAlpha(76),
                                 blurRadius: 16,
                                 offset: const Offset(0, 4),
-                              )
+                              ),
                             ],
                           ),
                           child: const Icon(
@@ -98,7 +109,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'Fittoria Health',
                           style: AppTextStyles.h1.copyWith(
-                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.lightTextPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -107,20 +120,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'Patient Portal',
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextSecondary,
+                            color: isDark
+                                ? AppColors.darkTextMuted
+                                : AppColors.lightTextSecondary,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 1.0,
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 48.0),
-                      
+
                       // --- Welcome copy ---
                       Text(
                         'Welcome back 👋',
                         style: AppTextStyles.h2.copyWith(
-                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                          color: isDark
+                              ? AppColors.darkTextPrimary
+                              : AppColors.lightTextPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -128,35 +145,194 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text(
                         'Sign in to access your health portal.',
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
                         ),
                       ),
-                      
+
                       const SizedBox(height: 32.0),
-                      
+
+                      // --- Toggle Phone / Email ---
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? AppColors.darkBgMuted
+                              : AppColors.lightBgMuted,
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return Stack(
+                              children: [
+                                // The sliding pill background
+                                AnimatedAlign(
+                                  duration: const Duration(milliseconds: 250),
+                                  curve: Curves.easeOutCubic,
+                                  alignment: _isPhoneInput
+                                      ? Alignment.centerLeft
+                                      : Alignment.centerRight,
+                                  child: Container(
+                                    width: constraints.maxWidth / 2,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? AppColors.darkBgSurface
+                                          : AppColors.lightBgSurface,
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.sm,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.05,
+                                          ),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                // The clickable text areas
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () {
+                                          FocusScope.of(
+                                            context,
+                                          ).unfocus(); // Smoothly transition keyboard
+                                          setState(() {
+                                            _isPhoneInput = true;
+                                            _hasSubmitted = false;
+                                            _identifierController.clear();
+                                          });
+                                        },
+                                        child: SizedBox(
+                                          height: 40,
+                                          child: Center(
+                                            child: AnimatedDefaultTextStyle(
+                                              duration: const Duration(
+                                                milliseconds: 200,
+                                              ),
+                                              style: AppTextStyles.buttonMedium.copyWith(
+                                                color: _isPhoneInput
+                                                    ? (isDark
+                                                          ? AppColors
+                                                                .darkTextPrimary
+                                                          : AppColors
+                                                                .lightTextPrimary)
+                                                    : (isDark
+                                                          ? AppColors
+                                                                .darkTextSecondary
+                                                          : AppColors
+                                                                .lightTextSecondary),
+                                                fontWeight: _isPhoneInput
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                              ),
+                                              child: const Text('Phone'),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () {
+                                          FocusScope.of(
+                                            context,
+                                          ).unfocus(); // Smoothly transition keyboard
+                                          setState(() {
+                                            _isPhoneInput = false;
+                                            _hasSubmitted = false;
+                                            _identifierController.clear();
+                                          });
+                                        },
+                                        child: SizedBox(
+                                          height: 40,
+                                          child: Center(
+                                            child: AnimatedDefaultTextStyle(
+                                              duration: const Duration(
+                                                milliseconds: 200,
+                                              ),
+                                              style: AppTextStyles.buttonMedium.copyWith(
+                                                color: !_isPhoneInput
+                                                    ? (isDark
+                                                          ? AppColors
+                                                                .darkTextPrimary
+                                                          : AppColors
+                                                                .lightTextPrimary)
+                                                    : (isDark
+                                                          ? AppColors
+                                                                .darkTextSecondary
+                                                          : AppColors
+                                                                .lightTextSecondary),
+                                                fontWeight: !_isPhoneInput
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                              ),
+                                              child: const Text('Email'),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      AppSpacing.heightLg,
+
                       // --- Identifier field (Phone or Email) ---
                       Text(
-                        'Mobile Number or Email',
+                        _isPhoneInput ? 'Mobile Number' : 'Email Address',
                         style: AppTextStyles.labelUppercase.copyWith(
-                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
                         ),
                       ),
                       AppSpacing.heightSm,
                       AppTextField(
                         controller: _identifierController,
-                        label: '9876543210 or you@example.com',
-                        prefixIcon: LucideIcons.phone,
-                        keyboardType: TextInputType.emailAddress,
+                        label: _isPhoneInput ? '9876543210' : 'you@example.com',
+                        prefixIcon: _isPhoneInput
+                            ? LucideIcons.phone
+                            : LucideIcons.mail,
+                        keyboardType: _isPhoneInput
+                            ? TextInputType.phone
+                            : TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter phone or email';
+                            return 'Please enter ${_isPhoneInput ? 'phone number' : 'email address'}';
+                          }
+                          if (_isPhoneInput) {
+                            final phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
+                            if (!phoneRegex.hasMatch(value.trim())) {
+                              return 'Please enter a valid phone number';
+                            }
+                          } else {
+                            final emailRegex = RegExp(
+                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                            );
+                            if (!emailRegex.hasMatch(value.trim())) {
+                              return 'Please enter a valid email address';
+                            }
                           }
                           return null;
                         },
                       ),
-                      
+
                       AppSpacing.heightLg,
-                      
+
                       // --- Password field ---
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -164,7 +340,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             'Password',
                             style: AppTextStyles.labelUppercase.copyWith(
-                              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                              color: isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.lightTextSecondary,
                             ),
                           ),
                         ],
@@ -182,17 +360,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         },
                       ),
-                      
+
                       const SizedBox(height: 24.0),
-                      
+
                       // --- Error Feedback Banner ---
                       if (state is AuthError) ...[
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 12.0,
+                          ),
                           decoration: BoxDecoration(
-                            color: isDark ? AppColors.dangerBgDark : AppColors.dangerBgLight,
+                            color: isDark
+                                ? AppColors.dangerBgDark
+                                : AppColors.dangerBgLight,
                             border: Border.all(
-                              color: isDark ? AppColors.dangerDark : AppColors.dangerBorderLight,
+                              color: isDark
+                                  ? AppColors.dangerDark
+                                  : AppColors.dangerBorderLight,
                               width: 1.0,
                             ),
                             borderRadius: AppRadius.borderMd,
@@ -201,7 +386,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               Icon(
                                 LucideIcons.alertCircle,
-                                color: isDark ? AppColors.dangerDark : AppColors.danger,
+                                color: isDark
+                                    ? AppColors.dangerDark
+                                    : AppColors.danger,
                                 size: 18.0,
                               ),
                               AppSpacing.widthSm,
@@ -209,7 +396,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Text(
                                   state.message,
                                   style: AppTextStyles.bodySmall.copyWith(
-                                    color: isDark ? AppColors.dangerDark : AppColors.danger,
+                                    color: isDark
+                                        ? AppColors.dangerDark
+                                        : AppColors.danger,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -219,7 +408,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 20.0),
                       ],
-                      
+
                       // --- Submit Button ---
                       AppButton(
                         text: 'Sign In Securely',
@@ -228,45 +417,57 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             context.read<AuthBloc>().add(
-                                  LoginSubmitted(
-                                    identifier: _identifierController.text,
-                                    password: _passwordController.text,
-                                  ),
-                                );
+                              LoginSubmitted(
+                                identifier: _identifierController.text,
+                                password: _passwordController.text,
+                              ),
+                            );
+                          } else {
+                            setState(() {
+                              _hasSubmitted = true;
+                            });
                           }
                         },
                       ),
-                      
+
                       const SizedBox(height: 28.0),
-                      
+
                       // --- Divider ---
                       Row(
                         children: [
                           Expanded(
                             child: Divider(
-                              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                              color: isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                            ),
                             child: Text(
                               'new to fittoria?',
                               style: AppTextStyles.labelUppercase.copyWith(
-                                color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                                color: isDark
+                                    ? AppColors.darkTextMuted
+                                    : AppColors.lightTextMuted,
                                 textBaseline: TextBaseline.alphabetic,
                               ),
                             ),
                           ),
                           Expanded(
                             child: Divider(
-                              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                              color: isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
                             ),
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: 24.0),
-                      
+
                       // --- Create Account Navigation ---
                       AppButton(
                         text: 'Create a Free Account',
@@ -275,9 +476,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           context.push(RouteNames.register);
                         },
                       ),
-                      
+
                       const SizedBox(height: 32.0),
-                      
+
                       // --- HIPAA Trust indicators ---
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -291,7 +492,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             'HIPAA Secure',
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                              color: isDark
+                                  ? AppColors.darkTextMuted
+                                  : AppColors.lightTextMuted,
                               fontSize: 10.0,
                             ),
                           ),
@@ -299,7 +502,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             '·',
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                              color: isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
                               fontSize: 10.0,
                             ),
                           ),
@@ -313,7 +518,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             'Encrypted',
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                              color: isDark
+                                  ? AppColors.darkTextMuted
+                                  : AppColors.lightTextMuted,
                               fontSize: 10.0,
                             ),
                           ),
@@ -321,7 +528,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             '·',
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                              color: isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
                               fontSize: 10.0,
                             ),
                           ),
@@ -329,13 +538,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           Icon(
                             LucideIcons.heart,
                             size: 12.0,
-                            color: AppColors.danger, // Using danger for the rose red color
+                            color: AppColors
+                                .danger, // Using danger for the rose red color
                           ),
                           const SizedBox(width: 6),
                           Text(
                             'Trusted',
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                              color: isDark
+                                  ? AppColors.darkTextMuted
+                                  : AppColors.lightTextMuted,
                               fontSize: 10.0,
                             ),
                           ),
@@ -361,7 +573,9 @@ class _LoginScreenState extends State<LoginScreen> {
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Please check your authenticator mobile application to obtain the current verification code.'),
+            Text(
+              'Please check your authenticator mobile application to obtain the current verification code.',
+            ),
             SizedBox(height: 16.0),
             // Code entry can be built if MFA endpoint has dynamic input
           ],

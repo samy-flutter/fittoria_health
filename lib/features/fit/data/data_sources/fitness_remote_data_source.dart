@@ -13,6 +13,8 @@ abstract class FitnessRemoteDataSource {
   Future<void> connectDevice(String provider, String displayName);
   Future<void> disconnectDevice(String provider);
   Future<void> joinChallenge(int challengeId);
+  Future<void> addGoal(String type, int target, String period);
+  Future<void> deleteGoal(int goalId);
 }
 
 class FitnessRemoteDataSourceImpl implements FitnessRemoteDataSource {
@@ -78,5 +80,22 @@ class FitnessRemoteDataSourceImpl implements FitnessRemoteDataSource {
   @override
   Future<void> joinChallenge(int challengeId) async {
     await _apiClient.post('/api/patient/fit/challenges', data: {'challengeId': challengeId});
+  }
+
+  @override
+  Future<void> addGoal(String type, int target, String period) async {
+    await _apiClient.post(
+      '/api/patient/fit/goals',
+      data: {
+        'goal_type': type,
+        'target_value': target,
+        'period': period,
+      },
+    );
+  }
+
+  @override
+  Future<void> deleteGoal(int goalId) async {
+    await _apiClient.delete('/api/patient/fit/goals?id=$goalId');
   }
 }

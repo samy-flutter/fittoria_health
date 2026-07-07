@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_cashfree_pg_sdk/api/cfpayment/cfwebcheckoutpayment.dart';
 import 'package:flutter_cashfree_pg_sdk/api/cfpaymentgateway/cfpaymentgatewayservice.dart';
 import 'package:flutter_cashfree_pg_sdk/api/cfsession/cfsession.dart';
-import 'package:flutter_cashfree_pg_sdk/api/cftheme/cftheme.dart';
 import 'package:flutter_cashfree_pg_sdk/utils/cfenums.dart';
 import 'package:flutter_cashfree_pg_sdk/utils/cfexceptions.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -20,6 +19,7 @@ import '../cubit/addresses_cubit.dart';
 import '../cubit/addresses_state.dart';
 import '../../data/models/shop_models.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../routes/route_names.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -42,12 +42,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       CFPaymentGatewayService();
 
   ShopAddress? _selectedAddress;
+  List<CartItem> _cartItems = [];
+  double _cartTotal = 0;
+  bool _isExpanded = false;
 
   @override
   void initState() {
     super.initState();
     _cfPaymentGatewayService.setCallback(verifyPayment, onError);
     context.read<AddressesCubit>().loadAddresses();
+    final cartState = context.read<CartCubit>().state;
+    if (cartState is CartLoaded) {
+      _cartItems = cartState.items;
+      _cartTotal = cartState.total;
+    }
   }
 
   void _onAddressSelected(ShopAddress? address) {
@@ -56,7 +64,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (address != null) {
         _nameController.text = address.name;
         _phoneController.text = address.phone;
-        _addressController.text = '${address.addressLine1}${address.addressLine2 != null ? ', ${address.addressLine2}' : ''}';
+        _addressController.text =
+            '${address.addressLine1}${address.addressLine2 != null ? ', ${address.addressLine2}' : ''}';
         _cityController.text = address.city;
         _stateController.text = address.state;
         _pinController.text = address.pincode;
@@ -77,8 +86,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void onError(CFErrorResponse error, String orderId) {
-    UIHelpers.showErrorSnackBar(context, error.getMessage() ?? 'Payment Failed');
-}
+    UIHelpers.showErrorSnackBar(
+      context,
+      error.getMessage() ?? 'Payment Failed',
+    );
+  }
 
   @override
   void dispose() {
@@ -92,7 +104,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _submitCheckout(BuildContext context) {
-    if (_formKey.currentState?.validate() ?? false) {
+    if (_selectedAddress != null ||
+        (_formKey.currentState?.validate() ?? false)) {
       final shippingDetails = {
         'shipping_name': _nameController.text.trim(),
         'shipping_phone': _phoneController.text.trim(),
@@ -104,6 +117,222 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       };
       context.read<CartCubit>().checkout(shippingDetails);
     }
+  }
+
+  Widget _buildOrderSummary(bool isDark) {
+    if (_cartItems.isEmpty) return const SizedBox.shrink();
+
+    double totalSellingPrice = 0;
+    for (var item in _cartItems) {
+      totalSellingPrice += item.sellingPrice * item.qty;
+    }
+    double discount = totalSellingPrice - _cartTotal;
+
+    final visibleItems = _isExpanded ? _cartItems : _cartItems.take(3).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Order Summary',
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
+            borderRadius: AppRadius.borderLg,
+            border: Border.all(
+              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ...visibleItems.map(
+                (item) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (item.primaryImage != null &&
+                          item.primaryImage!.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: AppRadius.borderSm,
+                          child: Image.network(
+                            item.primaryImage!,
+                            width: 48,
+                            height: 48,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  color: isDark
+                                      ? AppColors.darkBorder
+                                      : AppColors.lightBorder,
+                                  child: const Icon(
+                                    LucideIcons.image,
+                                    size: 20,
+                                  ),
+                                ),
+                          ),
+                        )
+                      else
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.darkBorder
+                                : AppColors.lightBorder,
+                            borderRadius: AppRadius.borderSm,
+                          ),
+                          child: const Icon(LucideIcons.image, size: 20),
+                        ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.productName,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? AppColors.darkTextPrimary
+                                    : AppColors.lightTextPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Qty: ${item.qty}',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '₹${item.lineTotal.toStringAsFixed(2)}',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.bold,
+                          color: isDark
+                              ? AppColors.darkTextPrimary
+                              : AppColors.lightTextPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (_cartItems.length > 3)
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _isExpanded = !_isExpanded;
+                      });
+                    },
+                    child: Text(
+                      _isExpanded
+                          ? 'View Less'
+                          : 'View All (${_cartItems.length} items)',
+                      style: GoogleFonts.inter(
+                        color: AppColors.fitOrange,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              const Divider(height: 20, thickness: 0.8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Item Total',
+                    style: GoogleFonts.inter(
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                    ),
+                  ),
+                  Text(
+                    '₹${totalSellingPrice.toStringAsFixed(2)}',
+                    style: GoogleFonts.inter(
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary,
+                      decoration: discount > 0
+                          ? TextDecoration.lineThrough
+                          : null,
+                    ),
+                  ),
+                ],
+              ),
+              if (discount > 0) ...[
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Discount',
+                      style: GoogleFonts.inter(color: Colors.green),
+                    ),
+                    Text(
+                      '- ₹${discount.toStringAsFixed(2)}',
+                      style: GoogleFonts.inter(
+                        color: Colors.green,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'To Pay',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary,
+                    ),
+                  ),
+                  Text(
+                    '₹${_cartTotal.toStringAsFixed(2)}',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: AppColors.fitOrange,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
   }
 
   @override
@@ -125,6 +354,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
       body: BlocConsumer<CartCubit, CartState>(
         listener: (context, state) {
+          if (state is CartLoaded) {
+            setState(() {
+              _cartItems = state.items;
+              _cartTotal = state.total;
+            });
+          }
           if (state is CartCheckoutSuccess) {
             if (state.paymentSessionId != null &&
                 state.paymentSessionId!.isNotEmpty) {
@@ -171,6 +406,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             child: ListView(
               padding: const EdgeInsets.all(20),
               children: [
+                _buildOrderSummary(isDark),
                 Text(
                   'Shipping Information',
                   style: GoogleFonts.inter(
@@ -182,105 +418,207 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                BlocBuilder<AddressesCubit, AddressesState>(
-                  builder: (context, addrState) {
-                    if (addrState is AddressesLoaded && addrState.addresses.isNotEmpty) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          DropdownButtonFormField<ShopAddress>(
-                            initialValue: _selectedAddress,
-                            isExpanded: true,
-                            hint: const Text('Select a saved address'),
-                            items: [
-                              const DropdownMenuItem<ShopAddress>(
-                                value: null,
-                                child: Text('Add New Address'),
-                              ),
-                              ...addrState.addresses.map((addr) {
-                                return DropdownMenuItem(
-                                  value: addr,
-                                  child: Text('${addr.name} - ${addr.addressLine1}, ${addr.city}'),
-                                );
-                              }),
-                            ],
-                            onChanged: _onAddressSelected,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
-                              border: OutlineInputBorder(
-                                borderRadius: AppRadius.borderLg,
-                                borderSide: BorderSide.none,
+                if (_selectedAddress != null)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? AppColors.darkBgSurface
+                              : AppColors.lightBgSurface,
+                          borderRadius: AppRadius.borderLg,
+                          border: Border.all(
+                            color: isDark
+                                ? AppColors.darkBorder
+                                : AppColors.lightBorder,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    _selectedAddress!.name,
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: isDark
+                                          ? AppColors.darkTextPrimary
+                                          : AppColors.lightTextPrimary,
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    final newAddress = await context
+                                        .push<ShopAddress?>(
+                                          RouteNames.patientShopAddresses,
+                                          extra: {
+                                            'isSelectionMode': true,
+                                            'selectedAddressId':
+                                                _selectedAddress?.id,
+                                          },
+                                        );
+                                    if (newAddress != null) {
+                                      _onAddressSelected(newAddress);
+                                    }
+                                  },
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: Text(
+                                    'Change',
+                                    style: GoogleFonts.inter(
+                                      color: AppColors.fitOrange,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              _selectedAddress!.phone,
+                              style: GoogleFonts.inter(
+                                color: isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
                               ),
                             ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${_selectedAddress!.addressLine1}${_selectedAddress!.addressLine2 != null ? ', ${_selectedAddress!.addressLine2}' : ''}',
+                              style: GoogleFonts.inter(
+                                color: isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${_selectedAddress!.city}, ${_selectedAddress!.state} - ${_selectedAddress!.pincode}',
+                              style: GoogleFonts.inter(
+                                color: isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                if (_selectedAddress == null)
+                  BlocBuilder<AddressesCubit, AddressesState>(
+                    builder: (context, addrState) {
+                      if (addrState is AddressesLoaded &&
+                          addrState.addresses.isNotEmpty) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          final defaultAddr = addrState.addresses.firstWhere(
+                            (a) => a.isDefault,
+                            orElse: () => addrState.addresses.first,
+                          );
+                          _onAddressSelected(defaultAddr);
+                        });
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 16),
+                            child: CircularProgressIndicator(
+                              color: AppColors.fitOrange,
+                            ),
                           ),
-                          const SizedBox(height: 16),
-                        ],
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-                _buildTextField(
-                  controller: _nameController,
-                  label: 'Full Name',
-                  icon: LucideIcons.user,
-                  isDark: isDark,
-                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: _phoneController,
-                  label: 'Phone Number',
-                  icon: LucideIcons.phone,
-                  keyboardType: TextInputType.phone,
-                  isDark: isDark,
-                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: _addressController,
-                  label: 'Address (House No, Building, Street)',
-                  icon: LucideIcons.mapPin,
-                  isDark: isDark,
-                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _cityController,
-                        label: 'City',
-                        icon: LucideIcons.building,
-                        isDark: isDark,
-                        validator: (v) =>
-                            v == null || v.isEmpty ? 'Required' : null,
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                if (_selectedAddress == null) ...[
+                  _buildTextField(
+                    controller: _nameController,
+                    label: 'Full Name',
+                    icon: LucideIcons.user,
+                    isDark: isDark,
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Required' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildTextField(
+                    controller: _phoneController,
+                    label: 'Phone Number',
+                    icon: LucideIcons.phone,
+                    keyboardType: TextInputType.phone,
+                    isDark: isDark,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) return 'Required';
+                      if (!RegExp(r'^[6-9]\d{9}$').hasMatch(v)) {
+                        return 'Invalid mobile number';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _buildTextField(
+                    controller: _addressController,
+                    label: 'Address (House No, Building, Street)',
+                    icon: LucideIcons.mapPin,
+                    isDark: isDark,
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Required' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                          controller: _cityController,
+                          label: 'City',
+                          icon: LucideIcons.building,
+                          isDark: isDark,
+                          validator: (v) =>
+                              v == null || v.isEmpty ? 'Required' : null,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _stateController,
-                        label: 'State',
-                        icon: LucideIcons.map,
-                        isDark: isDark,
-                        validator: (v) =>
-                            v == null || v.isEmpty ? 'Required' : null,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildTextField(
+                          controller: _stateController,
+                          label: 'State',
+                          icon: LucideIcons.map,
+                          isDark: isDark,
+                          validator: (v) =>
+                              v == null || v.isEmpty ? 'Required' : null,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: _pinController,
-                  label: 'Pincode',
-                  icon: LucideIcons.hash,
-                  keyboardType: TextInputType.number,
-                  isDark: isDark,
-                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 32),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildTextField(
+                    controller: _pinController,
+                    label: 'Pincode',
+                    icon: LucideIcons.hash,
+                    keyboardType: TextInputType.number,
+                    isDark: isDark,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) return 'Required';
+                      if (!RegExp(r'^[1-9][0-9]{5}$').hasMatch(v)) {
+                        return 'Invalid pincode';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+                const SizedBox(height: 20),
                 Text(
                   'Payment Method',
                   style: GoogleFonts.inter(
@@ -316,7 +654,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: AppRadius.borderLg,
                       ),
-                      ),
+                    ),
                     onPressed: () => _submitCheckout(context),
                     child: Text(
                       'Place Order',

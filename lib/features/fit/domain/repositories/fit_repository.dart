@@ -4,6 +4,7 @@ import '../../data/models/fit_models.dart';
 
 abstract class FitRepository {
   Future<Either<Failure, ActivityData>> getActivity({required String range});
+  Stream<Either<Failure, ActivityData>> watchActivity({required String range});
   Future<Either<Failure, void>> logActivity(ActivityLog log);
 
   Future<Either<Failure, HeartRateData>> getHeartRate();

@@ -9,6 +9,10 @@ class AddressesCubit extends Cubit<AddressesState> {
   AddressesCubit(this.repository) : super(AddressesInitial());
 
   Future<void> loadAddresses() async {
+    if (state is AddressesLoaded) {
+      _silentLoadAddresses();
+      return;
+    }
     emit(AddressesLoading());
     final res = await repository.getAddresses();
     res.fold(
@@ -30,7 +34,7 @@ class AddressesCubit extends Cubit<AddressesState> {
         emit(AddressesError(failure.message));
         if (currentState is AddressesLoaded) emit(currentState);
       },
-      (_) => loadAddresses(),
+      (_) => _silentLoadAddresses(),
     );
   }
 
@@ -47,7 +51,7 @@ class AddressesCubit extends Cubit<AddressesState> {
         emit(AddressesError(failure.message));
         if (currentState is AddressesLoaded) emit(currentState);
       },
-      (_) => loadAddresses(),
+      (_) => _silentLoadAddresses(),
     );
   }
 

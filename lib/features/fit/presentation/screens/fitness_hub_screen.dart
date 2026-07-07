@@ -14,10 +14,11 @@ class FitnessHubScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         title: const Text('Fitness'),
-        ),
-      body: HubGrid(
-        title: 'Fitness Tracking',
-        subtitle: 'Track every part of your training',
+        isBackButtonVisible: false,
+      ),
+        body: HubGrid(
+          title: 'Fitness Tracking',
+          subtitle: 'Track every part of your training',
         icon: LucideIcons.footprints,
         sections: [
           HubGridSectionData(

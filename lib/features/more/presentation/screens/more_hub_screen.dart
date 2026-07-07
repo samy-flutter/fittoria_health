@@ -14,10 +14,11 @@ class MoreHubScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         title: const Text('More'),
-        ),
-      body: HubGrid(
-        title: 'More',
-        subtitle: 'Shop, learn & account',
+        isBackButtonVisible: false,
+      ),
+        body: HubGrid(
+          title: 'More',
+          subtitle: 'Shop, learn & account',
         icon: LucideIcons.moreHorizontal,
         sections: [
           HubGridSectionData(

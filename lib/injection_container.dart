@@ -131,6 +131,10 @@ import 'features/shop/domain/repositories/shop_repository.dart';
 import 'features/shop/data/repositories/shop_repository_impl.dart';
 import 'features/shop/data/data_sources/shop_remote_data_source.dart';
 import 'features/shop/presentation/cubit/shop_cubit.dart';
+import 'features/shop/presentation/cubit/addresses_cubit.dart';
+import 'features/shop/presentation/cubit/cart_cubit.dart';
+import 'features/shop/presentation/cubit/orders_cubit.dart';
+import 'features/shop/presentation/cubit/order_tracking_cubit.dart';
 
 // Features - Academy
 import 'features/academy/data/data_sources/academy_remote_data_source.dart';
@@ -138,6 +142,7 @@ import 'features/academy/domain/repositories/academy_repository.dart';
 import 'features/academy/data/repositories/academy_repository_impl.dart';
 import 'features/academy/presentation/cubit/academy_cubit.dart';
 import 'features/fit/data/data_sources/pedometer_local_data_source.dart';
+import 'features/fit/data/data_sources/hybrid_activity_data_source.dart';
 import 'features/fit/domain/repositories/fit_repository.dart';
 import 'features/fit/data/repositories/fit_repository_impl.dart';
 import 'features/fit/presentation/cubit/activity_cubit.dart';
@@ -236,7 +241,7 @@ Future<void> init() async {
 
   // Fit Hub
   sl.registerFactory(() => DevicesCubit(sl()));
-  sl.registerFactory(() => GoalsCubit(sl()));
+  sl.registerLazySingleton(() => GoalsCubit(sl()));
   sl.registerFactory(() => ChallengesCubit(sl()));
   sl.registerFactory(() => BodyProgressCubit(sl()));
   sl.registerFactory(() => WorkoutsCubit(sl()));
@@ -342,6 +347,10 @@ Future<void> init() async {
     () => ShopRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerFactory(() => ShopCubit(sl()));
+  sl.registerLazySingleton(() => AddressesCubit(sl()));
+  sl.registerLazySingleton(() => CartCubit(sl()));
+  sl.registerFactory(() => OrdersCubit(sl()));
+  sl.registerFactory(() => OrderTrackingCubit(sl()));
 
   // Academy
   sl.registerLazySingleton<AcademyRemoteDataSource>(
@@ -354,7 +363,7 @@ Future<void> init() async {
 
   // Fit
   sl.registerLazySingleton<LocalActivityDataSource>(
-    () => PedometerLocalDataSourceImpl(sl()),
+    () => HybridActivityDataSourceImpl(sl()),
   );
   sl.registerLazySingleton<FitRepository>(
     () => FitRepositoryImpl(healthDataSource: sl()),

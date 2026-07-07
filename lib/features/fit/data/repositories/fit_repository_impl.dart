@@ -40,6 +40,11 @@ class FitRepositoryImpl implements FitRepository {
   }
 
   @override
+  Stream<Either<Failure, ActivityData>> watchActivity({required String range}) {
+    return healthDataSource.watchActivityData().map((data) => Right(data));
+  }
+
+  @override
   Future<Either<Failure, void>> logActivity(ActivityLog log) async {
     // Note: Health Connect doesn't easily allow raw writes of complex aggregated logs without multiple granular data points.
     // This is currently a stub for manual entry.

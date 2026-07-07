@@ -61,24 +61,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'activity_frequency': _activityFreq,
           'training_mode': _trainingMode,
           'user_category': _userCategory,
-          'height_cm': _heightController.text.isNotEmpty ? _heightController.text : null,
-          'weight_kg': _weightController.text.isNotEmpty ? _weightController.text : null,
-          'medical_conditions': _medicalController.text.isNotEmpty ? _medicalController.text : null,
+          'height_cm': _heightController.text.isNotEmpty
+              ? _heightController.text
+              : null,
+          'weight_kg': _weightController.text.isNotEmpty
+              ? _weightController.text
+              : null,
+          'medical_conditions': _medicalController.text.isNotEmpty
+              ? _medicalController.text
+              : null,
         };
 
-        await sl<DioClient>().post(
-          ApiEndpoints.onboarding,
-          data: payload,
-        );
+        await sl<DioClient>().post(ApiEndpoints.onboarding, data: payload);
 
         if (!mounted) return;
         Navigator.pop(context);
-        UIHelpers.showSuccessSnackBar(context, 'Personalization saved! +25 Points');
-} catch (e) {
+        UIHelpers.showSuccessSnackBar(
+          context,
+          'Personalization saved! +25 Points',
+        );
+      } catch (e) {
         if (!mounted) return;
         setState(() => _isSaving = false);
         UIHelpers.showErrorSnackBar(context, 'Failed to save personalization');
-}
+      }
     }
   }
 
@@ -95,15 +101,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   bool _canProceed() {
     if (_currentIndex == 0) return _primaryGoal != null;
-    if (_currentIndex == 1) return _fitnessLevel != null && _activityFreq != null;
+    if (_currentIndex == 1)
+      return _fitnessLevel != null && _activityFreq != null;
     if (_currentIndex == 2) return true; // Height/Weight are optional
     if (_currentIndex == 3) return _trainingMode != null;
-    if (_currentIndex == 4) return _userCategory == 'general' || (_userCategory == 'medical' && _medicalController.text.isNotEmpty);
+    if (_currentIndex == 4)
+      return _userCategory == 'general' ||
+          (_userCategory == 'medical' && _medicalController.text.isNotEmpty);
     return false;
   }
 
   double? _calculateBMI() {
-    if (_heightController.text.isEmpty || _weightController.text.isEmpty) return null;
+    if (_heightController.text.isEmpty || _weightController.text.isEmpty)
+      return null;
     final h = double.tryParse(_heightController.text);
     final w = double.tryParse(_weightController.text);
     if (h == null || w == null || h <= 0) return null;
@@ -116,6 +126,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            LucideIcons.arrowLeft,
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
+          onPressed: _prevPage,
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -125,7 +148,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.fitOrange.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(999),
@@ -133,16 +159,44 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(LucideIcons.sparkles, color: AppColors.fitOrange, size: 12),
+                        const Icon(
+                          LucideIcons.sparkles,
+                          color: AppColors.fitOrange,
+                          size: 12,
+                        ),
                         const SizedBox(width: 6),
-                        Text('Let\'s personalize Fittoria', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.fitOrange)),
+                        Text(
+                          'Let\'s personalize Fittoria',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.fitOrange,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text('Tell us about you', style: GoogleFonts.dmSans(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+                  Text(
+                    'Tell us about you',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text('Step ${_currentIndex + 1} of $_totalPages · ${_stepTitles[_currentIndex]}', style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                  Text(
+                    'Step ${_currentIndex + 1} of $_totalPages · ${_stepTitles[_currentIndex]}',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: isDark
+                          ? AppColors.darkTextMuted
+                          : AppColors.lightTextMuted,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -153,10 +207,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: List.generate(_totalPages, (index) {
                   return Expanded(
                     child: Container(
-                      margin: EdgeInsets.only(right: index == _totalPages - 1 ? 0 : 6),
+                      margin: EdgeInsets.only(
+                        right: index == _totalPages - 1 ? 0 : 6,
+                      ),
                       height: 6,
                       decoration: BoxDecoration(
-                        color: index <= _currentIndex ? AppColors.fitOrange : (isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface),
+                        color: index <= _currentIndex
+                            ? AppColors.fitOrange
+                            : (isDark
+                                  ? AppColors.darkBgSurface
+                                  : AppColors.lightBgSurface),
                         borderRadius: BorderRadius.circular(999),
                       ),
                     ),
@@ -190,10 +250,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
-                          foregroundColor: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                          foregroundColor: isDark
+                              ? AppColors.darkTextMuted
+                              : AppColors.lightTextMuted,
                           shape: RoundedRectangleBorder(
                             borderRadius: AppRadius.borderLg,
-                            side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                            side: BorderSide(
+                              color: isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
+                            ),
                           ),
                           elevation: 0,
                           minimumSize: const Size(0, 48),
@@ -204,7 +270,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           children: [
                             const Icon(LucideIcons.arrowLeft, size: 16),
                             const SizedBox(width: 8),
-                            Text('Back', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+                            Text(
+                              'Back',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -214,24 +285,44 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.fitOrange,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppRadius.borderLg,
+                        ),
                         elevation: _currentIndex == _totalPages - 1 ? 8 : 0,
                         shadowColor: AppColors.fitOrange.withValues(alpha: 0.5),
                         minimumSize: const Size(0, 48),
                       ),
                       onPressed: _canProceed() && !_isSaving ? _nextPage : null,
-                      child: _isSaving 
-                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                        : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (_currentIndex == _totalPages - 1) const Icon(LucideIcons.check, size: 16),
-                          if (_currentIndex == _totalPages - 1) const SizedBox(width: 8),
-                          Text(_currentIndex == _totalPages - 1 ? 'Finish Setup' : 'Continue', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-                          if (_currentIndex != _totalPages - 1) const SizedBox(width: 8),
-                          if (_currentIndex != _totalPages - 1) const Icon(LucideIcons.arrowRight, size: 16),
-                        ],
-                      ),
+                      child: _isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (_currentIndex == _totalPages - 1)
+                                  const Icon(LucideIcons.check, size: 16),
+                                if (_currentIndex == _totalPages - 1)
+                                  const SizedBox(width: 8),
+                                Text(
+                                  _currentIndex == _totalPages - 1
+                                      ? 'Finish Setup'
+                                      : 'Continue',
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                if (_currentIndex != _totalPages - 1)
+                                  const SizedBox(width: 8),
+                                if (_currentIndex != _totalPages - 1)
+                                  const Icon(LucideIcons.arrowRight, size: 16),
+                              ],
+                            ),
                     ),
                   ),
                 ],
@@ -245,12 +336,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildGoalStep(bool isDark) {
     final goals = [
-      {'key': 'weight_loss', 'label': 'Weight Loss', 'icon': LucideIcons.trendingDown, 'color': const Color(0xFFEF4444)},
-      {'key': 'muscle_gain', 'label': 'Muscle Gain', 'icon': LucideIcons.dumbbell, 'color': const Color(0xFF22C55E)},
-      {'key': 'endurance', 'label': 'Endurance', 'icon': LucideIcons.activity, 'color': const Color(0xFF3B82F6)},
-      {'key': 'flexibility', 'label': 'Flexibility', 'icon': LucideIcons.zap, 'color': const Color(0xFFA78BFA)},
-      {'key': 'general_fitness', 'label': 'General Fitness', 'icon': LucideIcons.heartPulse, 'color': AppColors.fitOrange},
-      {'key': 'rehab', 'label': 'Recovery / Rehab', 'icon': LucideIcons.stethoscope, 'color': const Color(0xFF00D4B4)},
+      {
+        'key': 'weight_loss',
+        'label': 'Weight Loss',
+        'icon': LucideIcons.trendingDown,
+        'color': const Color(0xFFEF4444),
+      },
+      {
+        'key': 'muscle_gain',
+        'label': 'Muscle Gain',
+        'icon': LucideIcons.dumbbell,
+        'color': const Color(0xFF22C55E),
+      },
+      {
+        'key': 'endurance',
+        'label': 'Endurance',
+        'icon': LucideIcons.activity,
+        'color': const Color(0xFF3B82F6),
+      },
+      {
+        'key': 'flexibility',
+        'label': 'Flexibility',
+        'icon': LucideIcons.zap,
+        'color': const Color(0xFFA78BFA),
+      },
+      {
+        'key': 'general_fitness',
+        'label': 'General Fitness',
+        'icon': LucideIcons.heartPulse,
+        'color': AppColors.fitOrange,
+      },
+      {
+        'key': 'rehab',
+        'label': 'Recovery / Rehab',
+        'icon': LucideIcons.stethoscope,
+        'color': const Color(0xFF00D4B4),
+      },
     ];
 
     return SingleChildScrollView(
@@ -258,9 +379,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('What\'s your main goal?', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+          Text(
+            'What\'s your main goal?',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text('We\'ll tailor your plan & shop around it.', style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+          Text(
+            'We\'ll tailor your plan & shop around it.',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: isDark
+                  ? AppColors.darkTextMuted
+                  : AppColors.lightTextMuted,
+            ),
+          ),
           const SizedBox(height: 24),
           GridView.count(
             shrinkWrap: true,
@@ -278,9 +416,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isSelected ? color.withValues(alpha: 0.1) : (isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface),
+                    color: isSelected
+                        ? color.withValues(alpha: 0.1)
+                        : (isDark
+                              ? AppColors.darkBgSurface
+                              : AppColors.lightBgSurface),
                     borderRadius: AppRadius.borderXl,
-                    border: Border.all(color: isSelected ? color : (isDark ? AppColors.darkBorder : AppColors.lightBorder), width: 2),
+                    border: Border.all(
+                      color: isSelected
+                          ? color
+                          : (isDark
+                                ? AppColors.darkBorder
+                                : AppColors.lightBorder),
+                      width: 2,
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,11 +437,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(color: color.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8)),
-                        child: Icon(g['icon'] as IconData, color: color, size: 16),
+                        decoration: BoxDecoration(
+                          color: color.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          g['icon'] as IconData,
+                          color: color,
+                          size: 16,
+                        ),
                       ),
                       const SizedBox(height: 8),
-                      Text(g['label'] as String, style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 12, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+                      Text(
+                        g['label'] as String,
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: isDark
+                              ? AppColors.darkTextPrimary
+                              : AppColors.lightTextPrimary,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -307,12 +472,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildLevelStep(bool isDark) {
     final levels = [
       {'key': 'beginner', 'label': 'Beginner', 'desc': 'New to working out'},
-      {'key': 'intermediate', 'label': 'Intermediate', 'desc': 'Train a few times a week'},
-      {'key': 'advanced', 'label': 'Advanced', 'desc': 'Consistent & experienced'},
+      {
+        'key': 'intermediate',
+        'label': 'Intermediate',
+        'desc': 'Train a few times a week',
+      },
+      {
+        'key': 'advanced',
+        'label': 'Advanced',
+        'desc': 'Consistent & experienced',
+      },
     ];
 
     final freqs = [
-      {'key': 'sedentary', 'label': 'Sedentary', 'desc': 'Little to no exercise'},
+      {
+        'key': 'sedentary',
+        'label': 'Sedentary',
+        'desc': 'Little to no exercise',
+      },
       {'key': 'light', 'label': 'Lightly active', 'desc': '1-2 days / week'},
       {'key': 'moderate', 'label': 'Moderate', 'desc': '3-4 days / week'},
       {'key': 'active', 'label': 'Active', 'desc': '5-6 days / week'},
@@ -324,7 +501,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Your fitness level', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+          Text(
+            'Your fitness level',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+            ),
+          ),
           const SizedBox(height: 16),
           ...levels.map((l) {
             final isSelected = _fitnessLevel == l['key'];
@@ -335,9 +521,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.fitOrange.withValues(alpha: 0.1) : (isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface),
+                  color: isSelected
+                      ? AppColors.fitOrange.withValues(alpha: 0.1)
+                      : (isDark
+                            ? AppColors.darkBgSurface
+                            : AppColors.lightBgSurface),
                   borderRadius: AppRadius.borderXl,
-                  border: Border.all(color: isSelected ? AppColors.fitOrange : (isDark ? AppColors.darkBorder : AppColors.lightBorder), width: 2),
+                  border: Border.all(
+                    color: isSelected
+                        ? AppColors.fitOrange
+                        : (isDark
+                              ? AppColors.darkBorder
+                              : AppColors.lightBorder),
+                    width: 2,
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -345,19 +542,50 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l['label']!, style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
-                          Text(l['desc']!, style: GoogleFonts.inter(fontSize: 11, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                          Text(
+                            l['label']!,
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: isDark
+                                  ? AppColors.darkTextPrimary
+                                  : AppColors.lightTextPrimary,
+                            ),
+                          ),
+                          Text(
+                            l['desc']!,
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: isDark
+                                  ? AppColors.darkTextMuted
+                                  : AppColors.lightTextMuted,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    if (isSelected) const Icon(LucideIcons.check, color: AppColors.fitOrange, size: 20),
+                    if (isSelected)
+                      const Icon(
+                        LucideIcons.check,
+                        color: AppColors.fitOrange,
+                        size: 20,
+                      ),
                   ],
                 ),
               ),
             );
           }),
           const SizedBox(height: 32),
-          Text('How active are you?', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+          Text(
+            'How active are you?',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+            ),
+          ),
           const SizedBox(height: 16),
           Wrap(
             spacing: 8,
@@ -368,15 +596,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 behavior: HitTestBehavior.opaque,
                 onTap: () => setState(() => _activityFreq = f['key']),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.fitOrange : Colors.transparent,
+                    color: isSelected
+                        ? AppColors.fitOrange
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(999),
-                    border: Border.all(color: isSelected ? AppColors.fitOrange : (isDark ? AppColors.darkBorder : AppColors.lightBorder), width: 2),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.fitOrange
+                          : (isDark
+                                ? AppColors.darkBorder
+                                : AppColors.lightBorder),
+                      width: 2,
+                    ),
                   ),
                   child: Text(
                     f['label']!,
-                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: isSelected ? Colors.white : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected
+                          ? Colors.white
+                          : (isDark
+                                ? AppColors.darkTextMuted
+                                : AppColors.lightTextMuted),
+                    ),
                   ),
                 ),
               );
@@ -395,9 +643,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Body basics', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+          Text(
+            'Body basics',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text('Helps calculate calories & BMI. Optional.', style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+          Text(
+            'Helps calculate calories & BMI. Optional.',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: isDark
+                  ? AppColors.darkTextMuted
+                  : AppColors.lightTextMuted,
+            ),
+          ),
           const SizedBox(height: 24),
           Row(
             children: [
@@ -405,23 +670,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Height (cm)', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                    Text(
+                      'Height (cm)',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: isDark
+                            ? AppColors.darkTextMuted
+                            : AppColors.lightTextMuted,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Container(
-                      height: 48,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                    TextField(
+                      controller: _heightController,
+                      keyboardType: TextInputType.number,
+                      style: GoogleFonts.inter(fontSize: 14),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: AppRadius.borderLg,
+                          borderSide: BorderSide.none,
+                        ),
+                        isDense: true,
+                        hintText: '170',
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                       ),
-                      child: TextField(
-                        controller: _heightController,
-                        keyboardType: TextInputType.number,
-                        style: GoogleFonts.inter(fontSize: 14),
-                        decoration: const InputDecoration(border: InputBorder.none, hintText: '170'),
-                        onChanged: (_) => setState(() {}),
-                      ),
+                      onChanged: (_) => setState(() {}),
                     ),
                   ],
                 ),
@@ -431,23 +707,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Weight (kg)', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                    Text(
+                      'Weight (kg)',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: isDark
+                            ? AppColors.darkTextMuted
+                            : AppColors.lightTextMuted,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Container(
-                      height: 48,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                    TextField(
+                      controller: _weightController,
+                      keyboardType: TextInputType.number,
+                      style: GoogleFonts.inter(fontSize: 14),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: AppRadius.borderLg,
+                          borderSide: BorderSide.none,
+                        ),
+                        isDense: true,
+                        hintText: '65',
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                       ),
-                      child: TextField(
-                        controller: _weightController,
-                        keyboardType: TextInputType.number,
-                        style: GoogleFonts.inter(fontSize: 14),
-                        decoration: const InputDecoration(border: InputBorder.none, hintText: '65'),
-                        onChanged: (_) => setState(() {}),
-                      ),
+                      onChanged: (_) => setState(() {}),
                     ),
                   ],
                 ),
@@ -464,13 +751,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(LucideIcons.flame, color: AppColors.fitOrange, size: 24),
+                  const Icon(
+                    LucideIcons.flame,
+                    color: AppColors.fitOrange,
+                    size: 24,
+                  ),
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Your BMI', style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
-                      Text(bmi.toStringAsFixed(1), style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+                      Text(
+                        'Your BMI',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: isDark
+                              ? AppColors.darkTextMuted
+                              : AppColors.lightTextMuted,
+                        ),
+                      ),
+                      Text(
+                        bmi.toStringAsFixed(1),
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDark
+                              ? AppColors.darkTextPrimary
+                              : AppColors.lightTextPrimary,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -484,9 +792,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildPathStep(bool isDark) {
     final modes = [
-      {'key': 'online', 'label': 'Online', 'desc': '1-on-1 video & group batches', 'icon': LucideIcons.video},
-      {'key': 'offline', 'label': 'Offline', 'desc': 'Gym + assigned trainer & dietitian', 'icon': LucideIcons.building2},
-      {'key': 'hybrid', 'label': 'Hybrid', 'desc': 'Best of both worlds', 'icon': LucideIcons.repeat},
+      {
+        'key': 'online',
+        'label': 'Online',
+        'desc': '1-on-1 video & group batches',
+        'icon': LucideIcons.video,
+      },
+      {
+        'key': 'offline',
+        'label': 'Offline',
+        'desc': 'Gym + assigned trainer & dietitian',
+        'icon': LucideIcons.building2,
+      },
+      {
+        'key': 'hybrid',
+        'label': 'Hybrid',
+        'desc': 'Best of both worlds',
+        'icon': LucideIcons.repeat,
+      },
     ];
 
     return SingleChildScrollView(
@@ -494,9 +817,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('How do you want to train?', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+          Text(
+            'How do you want to train?',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text('Pick a path — you can change it later.', style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+          Text(
+            'Pick a path — you can change it later.',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: isDark
+                  ? AppColors.darkTextMuted
+                  : AppColors.lightTextMuted,
+            ),
+          ),
           const SizedBox(height: 24),
           ...modes.map((m) {
             final isSelected = _trainingMode == m['key'];
@@ -507,9 +847,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.fitOrange.withValues(alpha: 0.1) : (isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface),
+                  color: isSelected
+                      ? AppColors.fitOrange.withValues(alpha: 0.1)
+                      : (isDark
+                            ? AppColors.darkBgSurface
+                            : AppColors.lightBgSurface),
                   borderRadius: AppRadius.borderXl,
-                  border: Border.all(color: isSelected ? AppColors.fitOrange : (isDark ? AppColors.darkBorder : AppColors.lightBorder), width: 2),
+                  border: Border.all(
+                    color: isSelected
+                        ? AppColors.fitOrange
+                        : (isDark
+                              ? AppColors.darkBorder
+                              : AppColors.lightBorder),
+                    width: 2,
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -521,19 +872,45 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       alignment: Alignment.center,
-                      child: Icon(m['icon'] as IconData, color: AppColors.fitOrange, size: 20),
+                      child: Icon(
+                        m['icon'] as IconData,
+                        color: AppColors.fitOrange,
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(m['label'] as String, style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
-                          Text(m['desc'] as String, style: GoogleFonts.inter(fontSize: 11, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                          Text(
+                            m['label'] as String,
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: isDark
+                                  ? AppColors.darkTextPrimary
+                                  : AppColors.lightTextPrimary,
+                            ),
+                          ),
+                          Text(
+                            m['desc'] as String,
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: isDark
+                                  ? AppColors.darkTextMuted
+                                  : AppColors.lightTextMuted,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    if (isSelected) const Icon(LucideIcons.check, color: AppColors.fitOrange, size: 20),
+                    if (isSelected)
+                      const Icon(
+                        LucideIcons.check,
+                        color: AppColors.fitOrange,
+                        size: 20,
+                      ),
                   ],
                 ),
               ),
@@ -550,9 +927,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Any health conditions?', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+          Text(
+            'Any health conditions?',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text('If you have a medical condition, we\'ll flag your account for custom, supervised plans.', style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+          Text(
+            'If you have a medical condition, we\'ll flag your account for custom, supervised plans.',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: isDark
+                  ? AppColors.darkTextMuted
+                  : AppColors.lightTextMuted,
+            ),
+          ),
           const SizedBox(height: 24),
           Row(
             children: [
@@ -563,18 +957,50 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: _userCategory == 'general' ? const Color(0xFF22C55E).withValues(alpha: 0.1) : (isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface),
+                      color: _userCategory == 'general'
+                          ? const Color(0xFF22C55E).withValues(alpha: 0.1)
+                          : (isDark
+                                ? AppColors.darkBgSurface
+                                : AppColors.lightBgSurface),
                       borderRadius: AppRadius.borderXl,
-                      border: Border.all(color: _userCategory == 'general' ? const Color(0xFF22C55E) : (isDark ? AppColors.darkBorder : AppColors.lightBorder), width: 2),
+                      border: Border.all(
+                        color: _userCategory == 'general'
+                            ? const Color(0xFF22C55E)
+                            : (isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder),
+                        width: 2,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(LucideIcons.heartPulse, color: Color(0xFF22C55E), size: 20),
+                        const Icon(
+                          LucideIcons.heartPulse,
+                          color: Color(0xFF22C55E),
+                          size: 20,
+                        ),
                         const SizedBox(height: 12),
-                        Text('General', style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+                        Text(
+                          'General',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.lightTextPrimary,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text('No major conditions', style: GoogleFonts.inter(fontSize: 11, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                        Text(
+                          'No major conditions',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: isDark
+                                ? AppColors.darkTextMuted
+                                : AppColors.lightTextMuted,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -588,18 +1014,50 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: _userCategory == 'medical' ? const Color(0xFFEF4444).withValues(alpha: 0.1) : (isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface),
+                      color: _userCategory == 'medical'
+                          ? const Color(0xFFEF4444).withValues(alpha: 0.1)
+                          : (isDark
+                                ? AppColors.darkBgSurface
+                                : AppColors.lightBgSurface),
                       borderRadius: AppRadius.borderXl,
-                      border: Border.all(color: _userCategory == 'medical' ? const Color(0xFFEF4444) : (isDark ? AppColors.darkBorder : AppColors.lightBorder), width: 2),
+                      border: Border.all(
+                        color: _userCategory == 'medical'
+                            ? const Color(0xFFEF4444)
+                            : (isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder),
+                        width: 2,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(LucideIcons.stethoscope, color: Color(0xFFEF4444), size: 20),
+                        const Icon(
+                          LucideIcons.stethoscope,
+                          color: Color(0xFFEF4444),
+                          size: 20,
+                        ),
                         const SizedBox(height: 12),
-                        Text('Medical', style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+                        Text(
+                          'Medical',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.lightTextPrimary,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text('Custom supervised plans', style: GoogleFonts.inter(fontSize: 11, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                        Text(
+                          'Custom supervised plans',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: isDark
+                                ? AppColors.darkTextMuted
+                                : AppColors.lightTextMuted,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -612,9 +1070,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
+                color: isDark
+                    ? AppColors.darkBgSurface
+                    : AppColors.lightBgSurface,
                 borderRadius: AppRadius.borderXl,
-                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                border: Border.all(
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                ),
               ),
               child: TextField(
                 controller: _medicalController,
@@ -623,7 +1085,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: 'e.g. diabetes, hypertension, knee injury…',
-                  hintStyle: GoogleFonts.inter(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                  hintStyle: GoogleFonts.inter(
+                    color: isDark
+                        ? AppColors.darkTextMuted
+                        : AppColors.lightTextMuted,
+                  ),
                 ),
                 onChanged: (_) => setState(() {}),
               ),

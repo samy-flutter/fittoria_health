@@ -2,7 +2,7 @@ class ActivityLog {
   final int steps;
   final double distanceKm;
   final int caloriesKcal;
-  final int activeMinutes;
+  final double activeMinutes;
   final DateTime logDate;
 
   ActivityLog({
@@ -18,7 +18,7 @@ class ActivityLog {
       steps: json['steps'] ?? 0,
       distanceKm: (json['distance_km'] ?? 0).toDouble(),
       caloriesKcal: json['calories_kcal'] ?? 0,
-      activeMinutes: json['active_minutes'] ?? 0,
+      activeMinutes: (json['active_minutes'] ?? 0).toDouble(),
       logDate: DateTime.parse(json['log_date']),
     );
   }

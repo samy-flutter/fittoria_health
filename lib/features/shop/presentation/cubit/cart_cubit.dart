@@ -10,6 +10,19 @@ class CartCubit extends Cubit<CartState> {
   CartCubit(this.repository) : super(CartInitial());
 
   Future<void> loadCart() async {
+    if (state is CartLoaded) {
+      final result = await repository.getCart();
+      result.fold(
+        (failure) => null, // ignore error
+        (data) {
+          emit(CartLoaded(
+            items: data['items'],
+            total: data['total'],
+          ));
+        },
+      );
+      return;
+    }
     emit(CartLoading());
     final result = await repository.getCart();
     result.fold(

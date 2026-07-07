@@ -121,7 +121,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   steps: steps,
                   distanceKm: steps * 0.000762, // roughly 0.762 meters per step
                   caloriesKcal: (steps * 0.04).toInt(), // roughly 0.04 kcal per step
-                  activeMinutes: minutes,
+                  activeMinutes: minutes.toDouble(),
                   logDate: DateTime.now(),
                 );
                 this.context.read<ActivityCubit>().log(log, _range);
@@ -251,6 +251,18 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
+  String _formatDurationValue(double minutes) {
+    if (minutes < 1.0) return (minutes * 60).toInt().toString();
+    if (minutes < 60) return minutes.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '');
+    return (minutes / 60).toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '');
+  }
+
+  String _getDurationUnit(double minutes) {
+    if (minutes < 1.0) return 's';
+    if (minutes < 60) return 'min';
+    return 'h';
+  }
+
   Widget _buildTotalsGrid(ActivityLog totals, bool isDark) {
     return GridView.count(
       crossAxisCount: 2,
@@ -263,7 +275,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
         _MetricCard(title: 'Total Steps', value: NumberFormat.decimalPattern().format(totals.steps), unit: '', icon: LucideIcons.footprints, color: const Color(0xFFE8843C)),
         _MetricCard(title: 'Distance', value: totals.distanceKm.toStringAsFixed(1), unit: 'km', icon: LucideIcons.mapPin, color: const Color(0xFF3B82F6)),
         _MetricCard(title: 'Calories', value: NumberFormat.decimalPattern().format(totals.caloriesKcal), unit: 'kcal', icon: LucideIcons.flame, color: const Color(0xFFEF4444)),
-        _MetricCard(title: 'Active Time', value: totals.activeMinutes.toString(), unit: 'min', icon: LucideIcons.clock, color: const Color(0xFF8B5CF6)),
+        _MetricCard(
+          title: 'Active Time',
+          value: _formatDurationValue(totals.activeMinutes),
+          unit: _getDurationUnit(totals.activeMinutes),
+          icon: LucideIcons.clock,
+          color: const Color(0xFF8B5CF6),
+        ),
       ],
     );
   }
@@ -295,7 +313,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
               itemCount: data.series.length,
               separatorBuilder: (context, index) => Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
               itemBuilder: (context, index) {
-                final log = data.series[index];
+                // Reverse the index to show newest (today) at the top
+                final log = data.series[data.series.length - 1 - index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   child: Row(
@@ -306,7 +325,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         children: [
                           Text(DateFormat('EEEE, MMM d').format(log.logDate), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                           const SizedBox(height: 4),
-                          Text('${log.distanceKm.toStringAsFixed(1)} km  •  ${log.caloriesKcal} kcal  •  ${log.activeMinutes} min', style: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, fontSize: 12)),
+                          Text(
+                            '${log.distanceKm.toStringAsFixed(1)} km  •  ${log.caloriesKcal} kcal  •  ${_formatDurationValue(log.activeMinutes)} ${_getDurationUnit(log.activeMinutes)}',
+                            style: TextStyle(
+                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                       Column(

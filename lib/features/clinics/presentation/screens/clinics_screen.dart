@@ -49,14 +49,21 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
     return Scaffold(
       appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(LucideIcons.chevronLeft,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary, size: 20),
+          icon: Icon(
+            LucideIcons.chevronLeft,
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+            size: 20,
+          ),
           onPressed: () => context.pop(),
         ),
         title: Text(
           'Explore Clinics',
           style: AppTextStyles.h3.copyWith(
-            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -75,25 +82,41 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.darkBgSurface : Colors.white,
                       borderRadius: AppRadius.borderXl,
-                      border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                      border: Border.all(
+                        color: isDark
+                            ? AppColors.darkBorder
+                            : AppColors.lightBorder,
+                      ),
                     ),
                     child: TextField(
                       controller: _searchController,
-                      onChanged: (v) => context.read<ClinicsCubit>().updateSearch(v),
+                      onChanged: (v) =>
+                          context.read<ClinicsCubit>().updateSearch(v),
                       style: TextStyle(
                         fontSize: 14,
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary,
                       ),
                       decoration: InputDecoration(
                         hintText: 'Search clinic, specialty, city...',
                         hintStyle: TextStyle(
                           fontSize: 14,
-                          color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                          color: isDark
+                              ? AppColors.darkTextMuted
+                              : AppColors.lightTextMuted,
                         ),
-                        prefixIcon: Icon(LucideIcons.search, size: 18,
-                            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                        prefixIcon: Icon(
+                          LucideIcons.search,
+                          size: 18,
+                          color: isDark
+                              ? AppColors.darkTextMuted
+                              : AppColors.lightTextMuted,
+                        ),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                        ),
                       ),
                     ),
                   ),
@@ -103,7 +126,9 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
                   onTap: () {
                     // TODO: Request location permission and set lat/lng
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Location discovery coming soon')),
+                      const SnackBar(
+                        content: Text('Location discovery coming soon'),
+                      ),
                     );
                   },
                   child: Container(
@@ -112,9 +137,19 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.darkBgSurface : Colors.white,
                       borderRadius: AppRadius.borderXl,
-                      border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                      border: Border.all(
+                        color: isDark
+                            ? AppColors.darkBorder
+                            : AppColors.lightBorder,
+                      ),
                     ),
-                    child: Icon(LucideIcons.locateFixed, color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary, size: 18),
+                    child: Icon(
+                      LucideIcons.locateFixed,
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                      size: 18,
+                    ),
                   ),
                 ),
               ],
@@ -125,35 +160,49 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
           SizedBox(
             height: 36,
             child: BlocBuilder<ClinicsCubit, ClinicsState>(
-              buildWhen: (prev, curr) => curr is ClinicsLoaded || curr is ClinicsLoading,
+              buildWhen: (prev, curr) =>
+                  curr is ClinicsLoaded || curr is ClinicsLoading,
               builder: (context, state) {
-                final activeType = state is ClinicsLoaded ? state.activeTypeFilter : null;
+                final activeType = state is ClinicsLoaded
+                    ? state.activeTypeFilter
+                    : null;
                 final filterOptions = ['All', ..._clinicTypes];
-                
+
                 return ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: filterOptions.length,
-                  separatorBuilder: (context, index) => const SizedBox(width: 8),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 8),
                   itemBuilder: (context, index) {
                     final type = filterOptions[index];
                     final typeVal = type == 'All' ? '' : type;
-                    final isActive = activeType == typeVal || (activeType == null && type == 'All');
-                    
+                    final isActive =
+                        activeType == typeVal ||
+                        (activeType == null && type == 'All');
+
                     return GestureDetector(
-                      onTap: () => context.read<ClinicsCubit>().setTypeFilter(typeVal),
+                      onTap: () =>
+                          context.read<ClinicsCubit>().setTypeFilter(typeVal),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 180),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: isActive
                               ? AppColors.lightTeal
-                              : (isDark ? AppColors.darkBgSurface : Colors.white),
+                              : (isDark
+                                    ? AppColors.darkBgSurface
+                                    : Colors.white),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: isActive
                                 ? AppColors.lightTeal
-                                : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                                : (isDark
+                                      ? AppColors.darkBorder
+                                      : AppColors.lightBorder),
                           ),
                         ),
                         child: Center(
@@ -164,7 +213,9 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
                               fontWeight: FontWeight.w600,
                               color: isActive
                                   ? Colors.white
-                                  : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                                  : (isDark
+                                        ? AppColors.darkTextSecondary
+                                        : AppColors.lightTextSecondary),
                             ),
                           ),
                         ),
@@ -199,12 +250,17 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(LucideIcons.alertCircle, size: 40, color: AppColors.danger),
+                        const Icon(
+                          LucideIcons.alertCircle,
+                          size: 40,
+                          color: AppColors.danger,
+                        ),
                         AppSpacing.heightMd,
                         Text(state.message, textAlign: TextAlign.center),
                         AppSpacing.heightMd,
                         ElevatedButton(
-                          onPressed: () => context.read<ClinicsCubit>().loadClinics(),
+                          onPressed: () =>
+                              context.read<ClinicsCubit>().loadClinics(),
                           child: const Text('Retry'),
                         ),
                       ],
@@ -216,13 +272,22 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(LucideIcons.building2, size: 48,
-                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                          Icon(
+                            LucideIcons.building2,
+                            size: 48,
+                            color: isDark
+                                ? AppColors.darkTextMuted
+                                : AppColors.lightTextMuted,
+                          ),
                           AppSpacing.heightMd,
-                          Text('No clinics found',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                              )),
+                          Text(
+                            'No clinics found',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.lightTextSecondary,
+                            ),
+                          ),
                         ],
                       ),
                     );
@@ -231,9 +296,13 @@ class _ClinicsBodyState extends State<_ClinicsBody> {
                     onRefresh: () => context.read<ClinicsCubit>().loadClinics(),
                     color: AppColors.lightTeal,
                     child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       itemCount: state.clinics.length,
-                      itemBuilder: (_, i) => _ClinicCard(clinic: state.clinics[i], isDark: isDark),
+                      itemBuilder: (_, i) =>
+                          _ClinicCard(clinic: state.clinics[i], isDark: isDark),
                     ),
                   );
                 }
@@ -260,9 +329,15 @@ class _ClinicCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkBgSurface : Colors.white,
         borderRadius: AppRadius.borderXl,
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        ),
         boxShadow: [
-          BoxShadow(color: Colors.black.withAlpha(5), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withAlpha(5),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -288,7 +363,11 @@ class _ClinicCard extends StatelessWidget {
                   child: Center(
                     child: Text(
                       clinic.name.substring(0, 2).toUpperCase(),
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
@@ -303,7 +382,9 @@ class _ClinicCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.bodyLarge.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                          color: isDark
+                              ? AppColors.darkTextPrimary
+                              : AppColors.lightTextPrimary,
                         ),
                       ),
                       if (clinic.clinicType != null) ...[
@@ -312,7 +393,9 @@ class _ClinicCard extends StatelessWidget {
                           clinic.clinicType!,
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.lightTextSecondary,
                           ),
                         ),
                       ],
@@ -320,14 +403,23 @@ class _ClinicCard extends StatelessWidget {
                       Row(
                         children: [
                           Row(
-                            children: List.generate(5, (index) => const Icon(LucideIcons.star, size: 12, color: AppColors.warning)),
+                            children: List.generate(
+                              5,
+                              (index) => const Icon(
+                                LucideIcons.star,
+                                size: 12,
+                                color: AppColors.warning,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '4.8',
                             style: TextStyle(
                               fontSize: 10,
-                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                              color: isDark
+                                  ? AppColors.darkTextMuted
+                                  : AppColors.lightTextMuted,
                             ),
                           ),
                         ],
@@ -338,8 +430,7 @@ class _ClinicCard extends StatelessWidget {
               ],
             ),
           ),
-          
-            
+
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: Column(
@@ -349,14 +440,26 @@ class _ClinicCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(LucideIcons.mapPin, size: 14, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                      Icon(
+                        LucideIcons.mapPin,
+                        size: 14,
+                        color: isDark
+                            ? AppColors.darkTextMuted
+                            : AppColors.lightTextMuted,
+                      ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          [clinic.address, clinic.city, clinic.state].where((s) => s != null && s.isNotEmpty).join(', '),
+                          [
+                            clinic.address,
+                            clinic.city,
+                            clinic.state,
+                          ].where((s) => s != null && s.isNotEmpty).join(', '),
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.lightTextSecondary,
                           ),
                         ),
                       ),
@@ -366,13 +469,21 @@ class _ClinicCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(LucideIcons.phone, size: 14, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                      Icon(
+                        LucideIcons.phone,
+                        size: 14,
+                        color: isDark
+                            ? AppColors.darkTextMuted
+                            : AppColors.lightTextMuted,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         clinic.phone!,
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
                         ),
                       ),
                     ],
@@ -381,24 +492,40 @@ class _ClinicCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(LucideIcons.stethoscope, size: 14, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                    Icon(
+                      LucideIcons.stethoscope,
+                      size: 14,
+                      color: isDark
+                          ? AppColors.darkTextMuted
+                          : AppColors.lightTextMuted,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       '${clinic.doctorCount ?? 0} doctors',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                        color: isDark
+                            ? AppColors.darkTextMuted
+                            : AppColors.lightTextMuted,
                       ),
                     ),
                     const SizedBox(width: 12),
                     if (clinic.consultationFee != null) ...[
-                      Icon(LucideIcons.clock, size: 14, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                      Icon(
+                        LucideIcons.clock,
+                        size: 14,
+                        color: isDark
+                            ? AppColors.darkTextMuted
+                            : AppColors.lightTextMuted,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         'From ₹${clinic.consultationFee!.toStringAsFixed(0)}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                          color: isDark
+                              ? AppColors.darkTextMuted
+                              : AppColors.lightTextMuted,
                         ),
                       ),
                     ],
@@ -407,10 +534,14 @@ class _ClinicCard extends StatelessWidget {
               ],
             ),
           ),
-          
+
           Container(
             decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder)),
+              border: Border(
+                top: BorderSide(
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                ),
+              ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: GestureDetector(
@@ -429,10 +560,18 @@ class _ClinicCard extends StatelessWidget {
                   children: [
                     const Text(
                       'Book Appointment',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(LucideIcons.arrowRight, size: 14, color: Colors.white),
+                    const Icon(
+                      LucideIcons.arrowRight,
+                      size: 14,
+                      color: Colors.white,
+                    ),
                   ],
                 ),
               ),

@@ -7,6 +7,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
+import '../../../fit/presentation/cubit/goals_cubit.dart';
 import '../../../../injection_container.dart';
 import '../../../../routes/route_names.dart';
 import '../cubit/dashboard_cubit.dart';
@@ -18,8 +19,8 @@ import '../../../profile_records/data/models/profile_models.dart';
 import '../../../fit/data/models/fitness_models.dart';
 
 extension NavigationExtension on BuildContext {
-  void navigateTo(String route) {
-    push(route);
+  Future<void> navigateTo(String route) async {
+    await push(route);
   }
 }
 
@@ -105,7 +106,7 @@ class _DashboardContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-                _GoalsList(goals: state.fitnessSummary.goals),
+                const _GoalsList(),
                 const SizedBox(height: 20),
 
                 _MetricsGrid(
@@ -357,7 +358,41 @@ class _OnboardingPrompt extends StatelessWidget {
 class _ActivityHero extends StatelessWidget {
   final FitToday today;
   final List<FitGoal> goals;
+
   const _ActivityHero({required this.today, required this.goals});
+
+  String _formatSteps(int steps) {
+    if (steps < 1000) return steps.toString();
+    return '${(steps / 1000).toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')}k';
+  }
+
+  String _formatDistanceValue(double km) {
+    if (km < 1.0) {
+      return (km * 1000).toInt().toString();
+    }
+    return km.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '');
+  }
+
+  String _getDistanceUnit(double km) {
+    return km < 1.0 ? 'm' : 'km';
+  }
+
+  String _formatDurationValue(double minutes) {
+    if (minutes < 1.0) return (minutes * 60).toInt().toString();
+    if (minutes < 60) return minutes.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '');
+    return (minutes / 60).toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '');
+  }
+
+  String _getDurationUnit(double minutes) {
+    if (minutes < 1.0) return 's';
+    if (minutes < 60) return 'min';
+    return 'h';
+  }
+
+  String _formatCalories(int kcal) {
+    if (kcal < 1000) return kcal.toString();
+    return '${(kcal / 1000).toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')}k';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -434,7 +469,7 @@ class _ActivityHero extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${(today.steps / 1000).toStringAsFixed(1)}k',
+                        _formatSteps(today.steps),
                         style: GoogleFonts.inter(
                           color: const Color(0xFF2A2520),
                           fontSize: 16,
@@ -460,20 +495,20 @@ class _ActivityHero extends StatelessWidget {
                     _ActivityStat(
                       icon: LucideIcons.mapPin,
                       label: 'Distance',
-                      value: today.distanceKm.toStringAsFixed(1),
-                      unit: 'km',
+                      value: _formatDistanceValue(today.distanceKm),
+                      unit: _getDistanceUnit(today.distanceKm),
                     ),
                     _ActivityStat(
                       icon: LucideIcons.flame,
                       label: 'Calories',
-                      value: today.caloriesKcal.toString(),
+                      value: _formatCalories(today.caloriesKcal),
                       unit: 'kcal',
                     ),
                     _ActivityStat(
                       icon: LucideIcons.clock,
                       label: 'Active',
-                      value: today.activeMinutes.toString(),
-                      unit: 'min',
+                      value: _formatDurationValue(today.activeMinutes),
+                      unit: _getDurationUnit(today.activeMinutes),
                     ),
                   ],
                 ),
@@ -706,7 +741,7 @@ class _CareTeamList extends StatelessWidget {
               ],
             ),
             GestureDetector(
-              onTap: () => context.navigateTo(RouteNames.patientCare),
+              onTap: () => context.go(RouteNames.patientCare),
               child: Text(
                 'View All',
                 style: GoogleFonts.inter(
@@ -884,8 +919,7 @@ class _CareTeamCard extends StatelessWidget {
 // ─── Goals List ─────────────────────────────────────────────────────────────
 
 class _GoalsList extends StatelessWidget {
-  final List<FitGoal> goals;
-  const _GoalsList({required this.goals});
+  const _GoalsList();
 
   IconData _getGoalIcon(String type) {
     switch (type) {
@@ -958,109 +992,137 @@ class _GoalsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return BlocBuilder<GoalsCubit, GoalsState>(
+      builder: (context, state) {
+        if (state is GoalsInitial) {
+          // Fire off initial load if it hasn't been loaded yet.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<GoalsCubit>().loadGoals();
+          });
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              onTap: () => context.navigateTo(RouteNames.patientFitGoals),
-              child: Row(
+        if (state is GoalsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is GoalsError) {
+          // Return empty on error
+          return const SizedBox.shrink();
+        }
+
+        if (state is GoalsLoaded) {
+          final goals = state.goals;
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+
+          return Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(
-                    LucideIcons.trendingUp,
-                    color: AppColors.fitOrange,
-                    size: 16,
+                  GestureDetector(
+                    onTap: () => context.navigateTo(RouteNames.patientFitGoals),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          LucideIcons.trendingUp,
+                          color: AppColors.fitOrange,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'All Goals',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.lightTextPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'All Goals',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                  GestureDetector(
+                    onTap: () => context.navigateTo(RouteNames.patientFitGoals),
+                    child: Row(
+                      children: [
+                        if (goals.isEmpty)
+                          const Icon(
+                            LucideIcons.plus,
+                            color: AppColors.fitOrange,
+                            size: 12,
+                          ),
+                        if (goals.isEmpty) const SizedBox(width: 4),
+                        Text(
+                          goals.isNotEmpty ? 'View all' : 'Add goal',
+                          style: GoogleFonts.inter(
+                            color: AppColors.fitOrange,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (goals.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  decoration: BoxDecoration(
+                    borderRadius: AppRadius.borderXl,
+                    border: Border.all(
                       color: isDark
-                          ? AppColors.darkTextPrimary
-                          : AppColors.lightTextPrimary,
+                          ? AppColors.darkBorder
+                          : AppColors.lightBorder,
+                      style: BorderStyle.solid,
                     ),
                   ),
-                ],
-              ),
-            ),
-            GestureDetector(
-              onTap: () => context.navigateTo(RouteNames.patientFitGoals),
-              child: Row(
-                children: [
-                  const Icon(
-                    LucideIcons.plus,
-                    color: AppColors.fitOrange,
-                    size: 12,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Add goal',
-                    style: GoogleFonts.inter(
-                      color: AppColors.fitOrange,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        if (goals.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            decoration: BoxDecoration(
-              borderRadius: AppRadius.borderXl,
-              border: Border.all(
-                color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                style: BorderStyle.solid,
-              ),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  LucideIcons.plus,
-                  color: isDark
-                      ? AppColors.darkTextMuted
-                      : AppColors.lightTextMuted,
-                  size: 24,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Set your first goal',
-                  style: GoogleFonts.inter(
-                    color: isDark
-                        ? AppColors.darkTextMuted
-                        : AppColors.lightTextMuted,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          )
-        else
-          Column(
-            children: goals
-                .map(
-                  (g) => _GoalCard(
-                    icon: _getGoalIcon(g.goalType),
-                    label: _getGoalLabel(g.goalType),
-                    unit: _getGoalUnit(g.goalType),
-                    current: g.current,
-                    target: g.targetValue,
-                    pct: g.pct,
+                  child: Column(
+                    children: [
+                      Icon(
+                        LucideIcons.target,
+                        color: isDark
+                            ? AppColors.darkTextMuted.withValues(alpha: 0.2)
+                            : AppColors.lightTextMuted.withValues(alpha: 0.2),
+                        size: 40,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'No goals yet. Add one to start tracking.',
+                        style: GoogleFonts.inter(
+                          color: isDark
+                              ? AppColors.darkTextMuted
+                              : AppColors.lightTextMuted,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
                 )
-                .toList(),
-          ),
-      ],
+              else
+                Column(
+                  children: goals
+                      .map(
+                        (g) => _GoalCard(
+                          icon: _getGoalIcon(g.goalType),
+                          label: _getGoalLabel(g.goalType),
+                          unit: _getGoalUnit(g.goalType),
+                          current: g.current,
+                          target: g.targetValue,
+                          pct: g.pct,
+                        ),
+                      )
+                      .toList(),
+                ),
+            ],
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 }

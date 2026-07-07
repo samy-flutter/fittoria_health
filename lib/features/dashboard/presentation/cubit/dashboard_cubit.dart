@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
@@ -18,12 +19,40 @@ class DashboardCubit extends Cubit<DashboardState> {
   final FitnessRepository _fitnessRepository;
   final FitRepository _fitRepository;
 
+  StreamSubscription<Either<Failure, ActivityData>>? _activitySubscription;
+
   DashboardCubit(
     this._profileRepository,
     this._appointmentsRepository,
     this._fitnessRepository,
     this._fitRepository,
   ) : super(DashboardInitial());
+
+  @override
+  Future<void> close() {
+    _activitySubscription?.cancel();
+    return super.close();
+  }
+
+  Future<void> refreshFitnessSummarySilent() async {
+    if (state is DashboardLoaded) {
+      final currentState = state as DashboardLoaded;
+      final result = await _fitnessRepository.getFitnessSummary();
+      result.fold(
+        (failure) {}, // Ignore errors to remain silent
+        (summary) {
+          if (!isClosed) {
+            emit(DashboardLoaded(
+              profile: currentState.profile,
+              appointments: currentState.appointments,
+              fitnessSummary: summary,
+              onboardingStatus: currentState.onboardingStatus,
+            ));
+          }
+        },
+      );
+    }
+  }
 
   Future<void> loadDashboardData() async {
     emit(DashboardLoading());
@@ -78,14 +107,15 @@ class DashboardCubit extends Cubit<DashboardState> {
       );
 
       // Create new weekSteps list from local series
-      final List<FitWeekStep> updatedWeekSteps = List.from(fitnessSummary.weekSteps);
-      
-      if (updatedWeekSteps.isNotEmpty && localActivityData.series.isNotEmpty) {
-          final todaySteps = localActivityData.series.first.steps;
-          // Assume the last element in weekSteps is today, or we can just append it
-          // For simplicity, just update the last one
-          final last = updatedWeekSteps.last;
-          updatedWeekSteps[updatedWeekSteps.length - 1] = FitWeekStep(date: last.date, steps: todaySteps);
+      final List<FitWeekStep> updatedWeekSteps = [];
+      if (localActivityData.series.isNotEmpty) {
+          for (var s in localActivityData.series) {
+            final day = s.logDate.day.toString().padLeft(2, '0');
+            final month = s.logDate.month.toString().padLeft(2, '0');
+            updatedWeekSteps.add(FitWeekStep(date: '${s.logDate.year}-$month-$day', steps: s.steps));
+          }
+      } else {
+          updatedWeekSteps.addAll(fitnessSummary.weekSteps);
       }
 
       fitnessSummary = FitnessSummary(
@@ -109,5 +139,60 @@ class DashboardCubit extends Cubit<DashboardState> {
     ));
 
     AppLogger.s('[Dashboard] State emitted: DashboardLoaded');
+    AppLogger.s('[Dashboard] State emitted: DashboardLoaded');
+
+    // Subscribe to real-time pedometer updates
+    _activitySubscription?.cancel();
+    _activitySubscription = _fitRepository.watchActivity(range: 'week').listen((result) {
+      result.fold(
+        (failure) {
+          // Do nothing, keep existing data
+        },
+        (activityData) {
+          if (state is DashboardLoaded) {
+            final currentState = state as DashboardLoaded;
+            final currentSummary = currentState.fitnessSummary;
+            final todayLocal = activityData.totals;
+
+            final updatedToday = FitToday(
+              steps: todayLocal.steps,
+              distanceKm: todayLocal.distanceKm,
+              caloriesKcal: todayLocal.caloriesKcal,
+              activeMinutes: todayLocal.activeMinutes,
+              waterMl: currentSummary.today.waterMl,
+              nutritionKcal: currentSummary.today.nutritionKcal,
+            );
+
+            final List<FitWeekStep> updatedWeekSteps = [];
+            if (activityData.series.isNotEmpty) {
+                for (var s in activityData.series) {
+                  final day = s.logDate.day.toString().padLeft(2, '0');
+                  final month = s.logDate.month.toString().padLeft(2, '0');
+                  updatedWeekSteps.add(FitWeekStep(date: '${s.logDate.year}-$month-$day', steps: s.steps));
+                }
+            } else {
+                updatedWeekSteps.addAll(currentSummary.weekSteps);
+            }
+
+            final updatedSummary = FitnessSummary(
+              today: updatedToday,
+              goals: currentSummary.goals,
+              vitals: currentSummary.vitals,
+              challenges: currentSummary.challenges,
+              careTeam: currentSummary.careTeam,
+              academyVideos: currentSummary.academyVideos,
+              weekSteps: updatedWeekSteps,
+            );
+
+            emit(DashboardLoaded(
+              profile: currentState.profile,
+              appointments: currentState.appointments,
+              fitnessSummary: updatedSummary,
+              onboardingStatus: currentState.onboardingStatus,
+            ));
+          }
+        },
+      );
+    });
   }
 }

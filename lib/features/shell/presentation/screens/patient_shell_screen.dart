@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,17 +9,25 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/theme_cubit.dart';
 import '../../../../core/storage/preferences_helper.dart';
+import '../../../../routes/route_names.dart';
 import '../../../../injection_container.dart';
 
-class PatientShellScreen extends StatelessWidget {
+class PatientShellScreen extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
 
   const PatientShellScreen({super.key, required this.navigationShell});
 
+  @override
+  State<PatientShellScreen> createState() => _PatientShellScreenState();
+}
+
+class _PatientShellScreenState extends State<PatientShellScreen> {
+  DateTime? _lastBackPressTime;
+
   void _onTap(BuildContext context, int index) {
-    navigationShell.goBranch(
+    widget.navigationShell.goBranch(
       index,
-      initialLocation: index == navigationShell.currentIndex,
+      initialLocation: index == widget.navigationShell.currentIndex,
     );
   }
 
@@ -35,11 +44,44 @@ class PatientShellScreen extends StatelessWidget {
         .map((n) => n.isNotEmpty ? n[0].toUpperCase() : '')
         .join('');
 
-    return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
-      appBar: navigationShell.currentIndex != 0
-          ? null
-          : PreferredSize(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+
+        final router = GoRouter.of(context);
+        if (router.canPop()) {
+          router.pop();
+          return;
+        }
+
+        if (widget.navigationShell.currentIndex != 0) {
+          widget.navigationShell.goBranch(0);
+          return;
+        }
+
+        final now = DateTime.now();
+        if (_lastBackPressTime == null || now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+          _lastBackPressTime = now;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Press back again to exit',
+                style: GoogleFonts.inter(color: Colors.white),
+              ),
+              backgroundColor: isDark ? AppColors.darkBgSurface : Colors.black87,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+        SystemNavigator.pop();
+      },
+      child: Scaffold(
+        backgroundColor: isDark ? AppColors.darkBgBase : AppColors.lightBgBase,
+        appBar: widget.navigationShell.currentIndex != 0
+            ? null
+            : PreferredSize(
               preferredSize: const Size.fromHeight(56.0),
               child: Container(
                 decoration: BoxDecoration(
@@ -106,8 +148,7 @@ class PatientShellScreen extends StatelessWidget {
                         const SizedBox(width: 4),
                         // Avatar
                         GestureDetector(
-                          onTap: () =>
-                              navigationShell.goBranch(3), // Profile tab
+                          onTap: () => context.push(RouteNames.patientProfile),
                           child: Container(
                             width: 32,
                             height: 32,
@@ -145,11 +186,12 @@ class PatientShellScreen extends StatelessWidget {
                 ),
               ),
             ),
-      body: navigationShell,
+      body: widget.navigationShell,
       bottomNavigationBar: _PatientBottomNav(
-        currentIndex: navigationShell.currentIndex,
+        currentIndex: widget.navigationShell.currentIndex,
         onTap: (index) => _onTap(context, index),
         isDark: isDark,
+      ),
       ),
     );
   }

@@ -14,4 +14,6 @@ abstract class FitnessRepository {
   Future<Either<Failure, void>> connectDevice(String provider, String displayName);
   Future<Either<Failure, void>> disconnectDevice(String provider);
   Future<Either<Failure, void>> joinChallenge(int challengeId);
+  Future<Either<Failure, void>> addGoal(String type, int target, String period);
+  Future<Either<Failure, void>> deleteGoal(int goalId);
 }

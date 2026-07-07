@@ -14,7 +14,13 @@ import '../cubit/addresses_state.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 
 class AddressesScreen extends StatefulWidget {
-  const AddressesScreen({super.key});
+  final bool isSelectionMode;
+  final int? selectedAddressId;
+  const AddressesScreen({
+    super.key,
+    this.isSelectionMode = false,
+    this.selectedAddressId,
+  });
 
   @override
   State<AddressesScreen> createState() => _AddressesScreenState();
@@ -43,6 +49,17 @@ class _AddressesScreenState extends State<AddressesScreen> {
                 : AppColors.lightTextPrimary,
           ),
         ),
+        leading: widget.isSelectionMode
+            ? IconButton(
+                icon: Icon(
+                  LucideIcons.arrowLeft,
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.lightTextPrimary,
+                ),
+                onPressed: () => context.pop(),
+              )
+            : null,
         actions: [
           IconButton(
             icon: Icon(
@@ -131,213 +148,242 @@ class _AddressesScreenState extends State<AddressesScreen> {
                       const SizedBox(height: 16),
                   itemBuilder: (context, index) {
                     final address = state.addresses[index];
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? AppColors.darkBgSurface
-                            : AppColors.lightBgSurface,
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: InkWell(
+                        onTap: widget.isSelectionMode
+                            ? () => context.pop(address)
+                            : null,
                         borderRadius: AppRadius.borderLg,
-                        border: Border.all(
-                          color: isDark
-                              ? AppColors.darkBorder
-                              : AppColors.lightBorder,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.darkBgSurface
+                                : AppColors.lightBgSurface,
+                            borderRadius: AppRadius.borderLg,
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: Text(
-                                  address.name,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark
-                                        ? AppColors.darkTextPrimary
-                                        : AppColors.lightTextPrimary,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      address.name,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark
+                                            ? AppColors.darkTextPrimary
+                                            : AppColors.lightTextPrimary,
+                                      ),
+                                    ),
                                   ),
+                                  if (widget.isSelectionMode)
+                                    Icon(
+                                      address.id == widget.selectedAddressId
+                                          ? LucideIcons.circleDot
+                                          : LucideIcons.circle,
+                                      color:
+                                          address.id == widget.selectedAddressId
+                                          ? AppColors.fitOrange
+                                          : (isDark
+                                                ? AppColors.darkTextSecondary
+                                                : AppColors.lightTextSecondary),
+                                    )
+                                  else if (address.isDefault)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.fitOrange.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        borderRadius: AppRadius.borderSm,
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            LucideIcons.checkCircle,
+                                            size: 14,
+                                            color: AppColors.fitOrange,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'Default',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              color: AppColors.fitOrange,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                address.phone,
+                                style: GoogleFonts.inter(
+                                  color: isDark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.lightTextSecondary,
                                 ),
                               ),
-                              if (address.isDefault)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.fitOrange.withValues(
-                                      alpha: 0.1,
-                                    ),
-                                    borderRadius: AppRadius.borderSm,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(
-                                        LucideIcons.checkCircle,
-                                        size: 14,
-                                        color: AppColors.fitOrange,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'Default',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12,
-                                          color: AppColors.fitOrange,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${address.addressLine1}${address.addressLine2 != null ? ', ${address.addressLine2}' : ''}',
+                                style: GoogleFonts.inter(
+                                  color: isDark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.lightTextSecondary,
                                 ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            address.phone,
-                            style: GoogleFonts.inter(
-                              color: isDark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.lightTextSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${address.addressLine1}${address.addressLine2 != null ? ', ${address.addressLine2}' : ''}',
-                            style: GoogleFonts.inter(
-                              color: isDark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.lightTextSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${address.city}, ${address.state} - ${address.pincode}',
-                            style: GoogleFonts.inter(
-                              color: isDark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.lightTextSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Divider(
-                            color: isDark
-                                ? AppColors.darkBorder
-                                : AppColors.lightBorder,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              if (!address.isDefault)
-                                TextButton.icon(
-                                  onPressed: () {
-                                    final updatedAddress = ShopAddress(
-                                      id: address.id,
-                                      name: address.name,
-                                      phone: address.phone,
-                                      addressLine1: address.addressLine1,
-                                      addressLine2: address.addressLine2,
-                                      city: address.city,
-                                      state: address.state,
-                                      pincode: address.pincode,
-                                      isDefault: true,
-                                    );
-                                    context
-                                        .read<AddressesCubit>()
-                                        .updateAddress(updatedAddress);
-                                  },
-                                  icon: const Icon(
-                                    LucideIcons.checkCircle,
-                                    size: 16,
-                                    color: AppColors.fitOrange,
-                                  ),
-                                  label: Text(
-                                    'Set as Default',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.fitOrange,
-                                    ),
-                                  ),
-                                  style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: Size.zero,
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                  ),
-                                )
-                              else
-                                const SizedBox.shrink(),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${address.city}, ${address.state} - ${address.pincode}',
+                                style: GoogleFonts.inter(
+                                  color: isDark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.lightTextSecondary,
+                                ),
+                              ),
+                              if (!widget.isSelectionMode) ...[
+                                const SizedBox(height: 16),
+                                Divider(
+                                  color: isDark
+                                      ? AppColors.darkBorder
+                                      : AppColors.lightBorder,
+                                ),
+                              ],
+
                               Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  TextButton.icon(
-                                    onPressed: () {
-                                      context.push(
-                                        RouteNames.patientShopAddressForm,
-                                        extra: address,
-                                      );
-                                    },
-                                    icon: Icon(
-                                      LucideIcons.edit2,
-                                      size: 16,
-                                      color: isDark
-                                          ? AppColors.darkTextSecondary
-                                          : AppColors.lightTextSecondary,
+                                  if (!widget.isSelectionMode) ...[
+                                    if (!address.isDefault)
+                                      TextButton.icon(
+                                        onPressed: () {
+                                          final updatedAddress = ShopAddress(
+                                            id: address.id,
+                                            name: address.name,
+                                            phone: address.phone,
+                                            addressLine1: address.addressLine1,
+                                            addressLine2: address.addressLine2,
+                                            city: address.city,
+                                            state: address.state,
+                                            pincode: address.pincode,
+                                            isDefault: true,
+                                          );
+                                          context
+                                              .read<AddressesCubit>()
+                                              .updateAddress(updatedAddress);
+                                        },
+                                        icon: const Icon(
+                                          LucideIcons.checkCircle,
+                                          size: 16,
+                                          color: AppColors.fitOrange,
+                                        ),
+                                        label: Text(
+                                          'Set as Default',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.fitOrange,
+                                          ),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: Size.zero,
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                      )
+                                    else
+                                      const SizedBox.shrink(),
+                                    Row(
+                                      children: [
+                                        TextButton.icon(
+                                          onPressed: () {
+                                            context.push(
+                                              RouteNames.patientShopAddressForm,
+                                              extra: address,
+                                            );
+                                          },
+                                          icon: Icon(
+                                            LucideIcons.edit2,
+                                            size: 16,
+                                            color: isDark
+                                                ? AppColors.darkTextSecondary
+                                                : AppColors.lightTextSecondary,
+                                          ),
+                                          label: Text(
+                                            'Edit',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 14,
+                                              color: isDark
+                                                  ? AppColors.darkTextSecondary
+                                                  : AppColors
+                                                        .lightTextSecondary,
+                                            ),
+                                          ),
+                                          style: TextButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                            ),
+                                            minimumSize: Size.zero,
+                                            tapTargetSize: MaterialTapTargetSize
+                                                .shrinkWrap,
+                                          ),
+                                        ),
+                                        TextButton.icon(
+                                          onPressed: () {
+                                            context
+                                                .read<AddressesCubit>()
+                                                .deleteAddress(address.id);
+                                          },
+                                          icon: const Icon(
+                                            LucideIcons.trash2,
+                                            size: 16,
+                                            color: Colors.redAccent,
+                                          ),
+                                          label: Text(
+                                            'Delete',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 14,
+                                              color: Colors.redAccent,
+                                            ),
+                                          ),
+                                          style: TextButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                            ),
+                                            minimumSize: Size.zero,
+                                            tapTargetSize: MaterialTapTargetSize
+                                                .shrinkWrap,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    label: Text(
-                                      'Edit',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        color: isDark
-                                            ? AppColors.darkTextSecondary
-                                            : AppColors.lightTextSecondary,
-                                      ),
-                                    ),
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                      ),
-                                      minimumSize: Size.zero,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                  ),
-                                  TextButton.icon(
-                                    onPressed: () {
-                                      context
-                                          .read<AddressesCubit>()
-                                          .deleteAddress(address.id);
-                                    },
-                                    icon: const Icon(
-                                      LucideIcons.trash2,
-                                      size: 16,
-                                      color: Colors.redAccent,
-                                    ),
-                                    label: Text(
-                                      'Delete',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        color: Colors.redAccent,
-                                      ),
-                                    ),
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                      ),
-                                      minimumSize: Size.zero,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                  ),
+                                  ],
                                 ],
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
                     );
                   },

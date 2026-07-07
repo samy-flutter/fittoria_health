@@ -119,4 +119,26 @@ class FitnessRepositoryImpl implements FitnessRepository {
       return Left(ExceptionHandler.handle(e));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> addGoal(String type, int target, String period) async {
+    try {
+      await _remoteDataSource.addGoal(type, target, period);
+      return const Right(null);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return const Left(ServerFailure('Failed to add goal. Please check your connection and try again.'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteGoal(int goalId) async {
+    try {
+      await _remoteDataSource.deleteGoal(goalId);
+      return const Right(null);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return const Left(ServerFailure('Failed to delete goal. Please check your connection and try again.'));
+    }
+  }
 }

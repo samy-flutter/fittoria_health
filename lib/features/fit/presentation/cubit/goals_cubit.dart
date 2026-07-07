@@ -33,4 +33,26 @@ class GoalsCubit extends Cubit<GoalsState> {
       (data) => emit(GoalsLoaded(data)),
     );
   }
+
+  Future<void> addGoal(String type, int target, String period) async {
+    final result = await _repository.addGoal(type, target, period);
+    result.fold(
+      (failure) {
+        emit(GoalsError(failure.message));
+        loadGoals();
+      },
+      (_) => loadGoals(),
+    );
+  }
+
+  Future<void> deleteGoal(int goalId) async {
+    final result = await _repository.deleteGoal(goalId);
+    result.fold(
+      (failure) {
+        emit(GoalsError(failure.message));
+        loadGoals();
+      },
+      (_) => loadGoals(),
+    );
+  }
 }

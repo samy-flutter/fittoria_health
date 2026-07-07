@@ -71,17 +71,37 @@ class _GymDetailsScreenView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _buildGymHeader(context, state.data.activeMembership, isDark),
-                    const SizedBox(height: 32),
-                    _buildQrCard(context, isDark),
-                    const SizedBox(height: 32),
                     if (state.data.activeMembership != null) ...[
+                      _buildGymHeader(context, state.data.activeMembership, isDark),
+                      const SizedBox(height: 32),
+                      _buildQrCard(context, isDark),
+                      const SizedBox(height: 32),
                       _buildDetailRow('Status', state.data.activeMembership!.status.toUpperCase(), isDark),
                       _buildDetailRow('Valid Until', state.data.activeMembership!.endDate.split('T').first, isDark),
                       _buildDetailRow('Plan', state.data.activeMembership!.planName, isDark),
+                      const SizedBox(height: 32),
+                    ] else ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
+                          borderRadius: AppRadius.borderXl,
+                          border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(LucideIcons.building2, size: 32, color: isDark ? AppColors.darkTextMuted.withValues(alpha: 0.3) : AppColors.lightTextMuted.withValues(alpha: 0.3)),
+                            const SizedBox(height: 12),
+                            Text('No active gym membership', style: GoogleFonts.inter(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                          ]
+                        ),
+                      ),
+                      const SizedBox(height: 32),
                     ],
-                    const SizedBox(height: 32),
+                    
                     _buildStatsRow(state.data.stats, isDark),
+                    
                     if (state.data.upcomingClasses.isNotEmpty) ...[
                       const SizedBox(height: 32),
                       Align(
@@ -90,6 +110,30 @@ class _GymDetailsScreenView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       ...state.data.upcomingClasses.map((c) => _buildClassCard(c, isDark)),
+                    ],
+
+                    if (state.data.activeMembership == null && state.data.attendance.isEmpty) ...[
+                      const SizedBox(height: 32),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(32),
+                        decoration: BoxDecoration(
+                          color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
+                          borderRadius: AppRadius.borderXl,
+                          border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(LucideIcons.building2, size: 48, color: isDark ? AppColors.darkTextMuted.withValues(alpha: 0.2) : AppColors.lightTextMuted.withValues(alpha: 0.2)),
+                            const SizedBox(height: 16),
+                            Text('No gym data yet', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                            const SizedBox(height: 8),
+                            Text('Your gym membership and attendance will appear here once enrolled.', 
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+                          ]
+                        )
+                      )
                     ]
                   ],
                 ),
@@ -165,15 +209,14 @@ class _GymDetailsScreenView extends StatelessWidget {
   }
 
   Widget _buildStatsRow(GymStats? stats, bool isDark) {
-    if (stats == null) return const SizedBox.shrink();
     return Row(
       children: [
         Expanded(
-          child: _buildStatCard('Total Visits', stats.totalVisits.toString(), LucideIcons.calendarCheck, isDark),
+          child: _buildStatCard('Total Visits', (stats?.totalVisits ?? 0).toString(), LucideIcons.calendarCheck, isDark),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: _buildStatCard('This Month', stats.thisMonth.toString(), LucideIcons.barChart2, isDark),
+          child: _buildStatCard('This Month', (stats?.thisMonth ?? 0).toString(), LucideIcons.barChart2, isDark),
         ),
       ],
     );

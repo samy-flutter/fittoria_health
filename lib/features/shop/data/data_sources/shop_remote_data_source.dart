@@ -211,8 +211,7 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
   Future<void> updateAddress(ShopAddress address) async {
     try {
       final data = address.toJson();
-      data['_method'] = 'PUT';
-      await dioClient.post('${ApiEndpoints.patientAddresses}/${address.id}', data: data);
+      await dioClient.patch('${ApiEndpoints.patientAddresses}/${address.id}', data: data);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     } catch (e) {

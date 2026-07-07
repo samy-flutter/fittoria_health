@@ -14,10 +14,11 @@ class CommunityHubScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         title: const Text('Community'),
-        ),
-      body: HubGrid(
-        title: 'Community',
-        subtitle: 'Connect, compete & celebrate',
+        isBackButtonVisible: false,
+      ),
+        body: HubGrid(
+          title: 'Community',
+          subtitle: 'Connect, compete & celebrate',
         icon: LucideIcons.users,
         sections: [
           HubGridSectionData(

@@ -266,11 +266,11 @@ class _ShopView extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       sliver: SliverGrid(
                         gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 200,
                               mainAxisSpacing: 16,
                               crossAxisSpacing: 16,
-                              childAspectRatio: 0.43,
+                              mainAxisExtent: 300,
                             ),
                         delegate: SliverChildBuilderDelegate((context, index) {
                           final product = state.data.products[index];
@@ -346,6 +346,7 @@ class _ShopView extends StatelessWidget {
                         fontSize: 14,
                       ),
                       border: InputBorder.none,
+                      fillColor: Colors.transparent,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       errorBorder: InputBorder.none,
@@ -521,8 +522,8 @@ class _ShopView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image Area
-          AspectRatio(
-            aspectRatio: 1,
+          SizedBox(
+            height: 140,
             child: Stack(
               fit: StackFit.expand,
               children: [

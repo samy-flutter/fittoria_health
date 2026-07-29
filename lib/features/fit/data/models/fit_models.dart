@@ -16,9 +16,9 @@ class ActivityLog {
   factory ActivityLog.fromJson(Map<String, dynamic> json) {
     return ActivityLog(
       steps: json['steps'] ?? 0,
-      distanceKm: (json['distance_km'] ?? 0).toDouble(),
+      distanceKm: double.tryParse(json['distance_km']?.toString() ?? '') ?? 0.0,
       caloriesKcal: json['calories_kcal'] ?? 0,
-      activeMinutes: (json['active_minutes'] ?? 0).toDouble(),
+      activeMinutes: double.tryParse(json['active_minutes']?.toString() ?? '') ?? 0.0,
       logDate: DateTime.parse(json['log_date']),
     );
   }
@@ -138,6 +138,167 @@ class SleepData {
       avgDuration: json['avg_duration'] ?? '',
       sleepScore: json['sleep_score'] ?? '',
       history: (json['history'] as List?)?.map((x) => SleepLog.fromJson(x)).toList() ?? [],
+    );
+  }
+}
+class NutritionData {
+  final List<NutritionEntry> entries;
+  final NutritionTotals totals;
+
+  NutritionData({required this.entries, required this.totals});
+
+  factory NutritionData.fromJson(Map<String, dynamic> json) {
+    return NutritionData(
+      entries: (json['entries'] as List?)?.map((e) => NutritionEntry.fromJson(e)).toList() ?? [],
+      totals: NutritionTotals.fromJson(json['totals'] ?? {}),
+    );
+  }
+}
+
+class NutritionEntry {
+  final int? id;
+  final String mealType;
+  final String foodName;
+  final String? quantity;
+  final int caloriesKcal;
+  final int proteinG;
+  final int carbsG;
+  final int fatG;
+  final DateTime? loggedAt;
+
+  NutritionEntry({
+    this.id,
+    required this.mealType,
+    required this.foodName,
+    this.quantity,
+    required this.caloriesKcal,
+    required this.proteinG,
+    required this.carbsG,
+    required this.fatG,
+    this.loggedAt,
+  });
+
+  factory NutritionEntry.fromJson(Map<String, dynamic> json) {
+    return NutritionEntry(
+      id: json['id'],
+      mealType: json['meal_type'] ?? 'snack',
+      foodName: json['food_name'] ?? 'Unknown',
+      quantity: json['quantity']?.toString(),
+      caloriesKcal: int.tryParse(json['calories_kcal']?.toString() ?? '') ?? 0,
+      proteinG: int.tryParse(json['protein_g']?.toString() ?? '') ?? 0,
+      carbsG: int.tryParse(json['carbs_g']?.toString() ?? '') ?? 0,
+      fatG: int.tryParse(json['fat_g']?.toString() ?? '') ?? 0,
+      loggedAt: json['logged_at'] != null ? DateTime.parse(json['logged_at']) : null,
+    );
+  }
+}
+
+class NutritionTotals {
+  final int kcal;
+  final int proteinG;
+  final int carbsG;
+  final int fatG;
+
+  NutritionTotals({
+    required this.kcal,
+    required this.proteinG,
+    required this.carbsG,
+    required this.fatG,
+  });
+
+  factory NutritionTotals.fromJson(Map<String, dynamic> json) {
+    return NutritionTotals(
+      kcal: int.tryParse(json['kcal']?.toString() ?? '') ?? 0,
+      proteinG: int.tryParse(json['protein_g']?.toString() ?? '') ?? 0,
+      carbsG: int.tryParse(json['carbs_g']?.toString() ?? '') ?? 0,
+      fatG: int.tryParse(json['fat_g']?.toString() ?? '') ?? 0,
+    );
+  }
+}
+
+class WaterData {
+  final int totalMl;
+  final List<WaterEntry> entries;
+  final List<WaterWeekData> week;
+
+  WaterData({required this.totalMl, required this.entries, required this.week});
+
+  factory WaterData.fromJson(Map<String, dynamic> json) {
+    return WaterData(
+      totalMl: int.tryParse(json['total_ml']?.toString() ?? '') ?? 0,
+      entries: (json['entries'] as List?)?.map((e) => WaterEntry.fromJson(e)).toList() ?? [],
+      week: (json['week'] as List?)?.map((e) => WaterWeekData.fromJson(e)).toList() ?? [],
+    );
+  }
+}
+
+class WaterEntry {
+  final int? id;
+  final int ml;
+  final DateTime? loggedAt;
+
+  WaterEntry({this.id, required this.ml, this.loggedAt});
+
+  factory WaterEntry.fromJson(Map<String, dynamic> json) {
+    return WaterEntry(
+      id: json['id'],
+      ml: int.tryParse(json['ml']?.toString() ?? '') ?? 0,
+      loggedAt: json['logged_at'] != null ? DateTime.parse(json['logged_at']) : null,
+    );
+  }
+}
+
+class WaterWeekData {
+  final String logDate;
+  final int ml;
+
+  WaterWeekData({required this.logDate, required this.ml});
+
+  factory WaterWeekData.fromJson(Map<String, dynamic> json) {
+    return WaterWeekData(
+      logDate: json['log_date'] ?? '',
+      ml: int.tryParse(json['ml']?.toString() ?? '') ?? 0,
+    );
+  }
+}
+
+class MoodData {
+  final List<MoodLog> logs;
+
+  MoodData({required this.logs});
+
+  factory MoodData.fromJson(Map<String, dynamic> json) {
+    return MoodData(
+      logs: (json['logs'] as List?)?.map((e) => MoodLog.fromJson(e)).toList() ?? [],
+    );
+  }
+}
+
+class MoodLog {
+  final int? id;
+  final String mood;
+  final int? stressLevel;
+  final int? energyLevel;
+  final String? note;
+  final DateTime? loggedAt;
+
+  MoodLog({
+    this.id,
+    required this.mood,
+    this.stressLevel,
+    this.energyLevel,
+    this.note,
+    this.loggedAt,
+  });
+
+  factory MoodLog.fromJson(Map<String, dynamic> json) {
+    return MoodLog(
+      id: json['id'],
+      mood: json['mood'] ?? 'okay',
+      stressLevel: json['stress_level'],
+      energyLevel: json['energy_level'],
+      note: json['note'],
+      loggedAt: json['logged_at'] != null ? DateTime.parse(json['logged_at']) : null,
     );
   }
 }

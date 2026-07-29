@@ -29,7 +29,7 @@ class HybridActivityDataSourceImpl implements LocalActivityDataSource {
       bool requested = await _health.requestAuthorization(types);
       
       if (!requested) {
-        print('Health API permission not granted');
+        // print('Health API permission not granted');
         return null;
       }
 
@@ -90,7 +90,7 @@ class HybridActivityDataSourceImpl implements LocalActivityDataSource {
       );
 
     } catch (e) {
-      print('Error fetching Health API data: $e');
+      // print('Error fetching Health API data: $e');
       return null;
     }
   }

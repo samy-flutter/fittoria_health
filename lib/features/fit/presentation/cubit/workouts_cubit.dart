@@ -25,12 +25,17 @@ class WorkoutsCubit extends Cubit<WorkoutsState> {
 
   WorkoutsCubit(this._repository) : super(WorkoutsInitial());
 
-  Future<void> loadWorkouts() async {
-    emit(WorkoutsLoading());
+  Future<void> loadWorkouts({bool silently = false}) async {
+    if (!silently) emit(WorkoutsLoading());
     final result = await _repository.getWorkouts();
     result.fold(
       (failure) => emit(WorkoutsError(failure.message)),
       (data) => emit(WorkoutsLoaded(data)),
     );
+  }
+
+  Future<void> log(String type, String? title, int durationMin, double distanceKm, int caloriesKcal, int? avgHr) async {
+    await _repository.logWorkout(type, title, durationMin, distanceKm, caloriesKcal, avgHr);
+    await loadWorkouts(silently: true);
   }
 }

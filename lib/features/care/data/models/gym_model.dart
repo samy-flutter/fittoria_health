@@ -35,6 +35,8 @@ class GymMembership {
   final String planName;
   final double price;
   final int durationMonths;
+  final String trainerName;
+  final String dietitianName;
 
   GymMembership({
     required this.id,
@@ -47,6 +49,8 @@ class GymMembership {
     this.planName = '',
     this.price = 0.0,
     this.durationMonths = 0,
+    this.trainerName = '',
+    this.dietitianName = '',
   });
 
   factory GymMembership.fromJson(Map<String, dynamic> json) {
@@ -61,6 +65,8 @@ class GymMembership {
       planName: json['plan_name'] as String? ?? '',
       price: _parseDouble(json['price']),
       durationMonths: json['duration_months'] as int? ?? 0,
+      trainerName: json['trainer_name'] as String? ?? '',
+      dietitianName: json['dietitian_name'] as String? ?? '',
     );
   }
 }

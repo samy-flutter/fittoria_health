@@ -63,7 +63,7 @@ import '../features/fit/presentation/screens/water_screen.dart';
 import '../features/fit/presentation/screens/mood_screen.dart';
 import '../features/fit/presentation/screens/workouts_screen.dart';
 import '../features/fit/presentation/screens/body_progress_screen.dart';
-import '../features/fit/presentation/screens/nutrition_screen.dart';
+import 'package:fittoria_patient_app/features/fit/presentation/screens/nutrition_screen.dart';
 import '../features/fit/presentation/screens/record_screen.dart';
 import '../features/fit/presentation/screens/programs_screen.dart';
 import '../features/fit/presentation/screens/devices_screen.dart';
@@ -76,6 +76,9 @@ import '../features/prescriptions/presentation/bloc/prescriptions_cubit.dart';
 import '../features/fit/presentation/cubit/activity_cubit.dart';
 import '../features/fit/presentation/cubit/heart_rate_cubit.dart';
 import '../features/fit/presentation/cubit/sleep_cubit.dart';
+import '../features/fit/presentation/cubit/nutrition_cubit.dart';
+import '../features/fit/presentation/cubit/water_cubit.dart';
+import '../features/fit/presentation/cubit/mood_cubit.dart';
 import '../features/fit/presentation/cubit/goals_cubit.dart';
 import '../features/fit/presentation/cubit/challenges_cubit.dart';
 import '../features/fit/presentation/cubit/body_progress_cubit.dart';
@@ -340,17 +343,17 @@ class AppRouter {
       GoRoute(
         path: RouteNames.patientFitWater,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const WaterScreen(),
+        builder: (context, state) => BlocProvider(create: (_) => sl<WaterCubit>(), child: const WaterScreen(),),
       ),
       GoRoute(
         path: RouteNames.patientFitNutrition,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const NutritionScreen(),
+        builder: (context, state) => BlocProvider(create: (_) => sl<NutritionCubit>(), child: const NutritionScreen(),),
       ),
       GoRoute(
         path: RouteNames.patientFitMood,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const MoodScreen(),
+        builder: (context, state) => BlocProvider(create: (_) => sl<MoodCubit>(), child: const MoodScreen(),),
       ),
       GoRoute(
         path: RouteNames.patientFitWorkouts,

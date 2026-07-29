@@ -4,6 +4,7 @@ import '../../../../core/error/exception_handler.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../domain/repositories/fitness_repository.dart';
 import '../data_sources/fitness_remote_data_source.dart';
+import '../models/fit_models.dart';
 import '../models/fitness_models.dart';
 import '../models/fitness_hub_models.dart';
 
@@ -78,7 +79,65 @@ class FitnessRepositoryImpl implements FitnessRepository {
   }
 
   @override
-  Future<Either<Failure, void>> connectDevice(String provider, String displayName) async {
+  Future<Either<Failure, HeartRateData>> getHeartRate() async {
+    try {
+      final data = await _remoteDataSource.getHeartRate();
+      return Right(data);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SleepData>> getSleep() async {
+    try {
+      final data = await _remoteDataSource.getSleep();
+      return Right(data);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, NutritionData>> getNutrition(String date) async {
+    try {
+      final data = await _remoteDataSource.getNutrition(date);
+      return Right(data);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, WaterData>> getWater(String date) async {
+    try {
+      final data = await _remoteDataSource.getWater(date);
+      return Right(data);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MoodData>> getMood() async {
+    try {
+      final data = await _remoteDataSource.getMood();
+      return Right(data);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> connectDevice(
+    String provider,
+    String displayName,
+  ) async {
     try {
       await _remoteDataSource.connectDevice(provider, displayName);
       return const Right(null);
@@ -121,13 +180,21 @@ class FitnessRepositoryImpl implements FitnessRepository {
   }
 
   @override
-  Future<Either<Failure, void>> addGoal(String type, int target, String period) async {
+  Future<Either<Failure, void>> addGoal(
+    String type,
+    int target,
+    String period,
+  ) async {
     try {
       await _remoteDataSource.addGoal(type, target, period);
       return const Right(null);
     } catch (e) {
       if (e is ApiException) return Left(ServerFailure(e.message));
-      return const Left(ServerFailure('Failed to add goal. Please check your connection and try again.'));
+      return const Left(
+        ServerFailure(
+          'Failed to add goal. Please check your connection and try again.',
+        ),
+      );
     }
   }
 
@@ -138,7 +205,121 @@ class FitnessRepositoryImpl implements FitnessRepository {
       return const Right(null);
     } catch (e) {
       if (e is ApiException) return Left(ServerFailure(e.message));
-      return const Left(ServerFailure('Failed to delete goal. Please check your connection and try again.'));
+      return const Left(
+        ServerFailure(
+          'Failed to delete goal. Please check your connection and try again.',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> logWorkout(
+    String type,
+    String? title,
+    int durationMin,
+    double distanceKm,
+    int caloriesKcal,
+    int? avgHr,
+  ) async {
+    try {
+      await _remoteDataSource.logWorkout(
+        type,
+        title,
+        durationMin,
+        distanceKm,
+        caloriesKcal,
+        avgHr,
+      );
+      return const Right(null);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> logHeartRate(int bpm, String type) async {
+    try {
+      await _remoteDataSource.logHeartRate(bpm, type);
+      return const Right(null);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> logSleep(
+    DateTime date,
+    int total,
+    int rem,
+    int light,
+    int deep,
+    int awake,
+  ) async {
+    try {
+      await _remoteDataSource.logSleep(date, total, rem, light, deep, awake);
+      return const Right(null);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> logNutrition(
+    String date,
+    String mealType,
+    String foodName,
+    String quantity,
+    int calories,
+    int protein,
+    int carbs,
+    int fat,
+  ) async {
+    try {
+      await _remoteDataSource.logNutrition(
+        date,
+        mealType,
+        foodName,
+        quantity,
+        calories,
+        protein,
+        carbs,
+        fat,
+      );
+      return const Right(null);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> logWater(String date, int ml) async {
+    try {
+      await _remoteDataSource.logWater(date, ml);
+      return const Right(null);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> logMood(
+    String mood,
+    int stress,
+    int energy,
+    String note,
+  ) async {
+    try {
+      await _remoteDataSource.logMood(mood, stress, energy, note);
+      return const Right(null);
+    } catch (e) {
+      if (e is ApiException) return Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

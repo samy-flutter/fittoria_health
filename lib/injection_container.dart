@@ -148,6 +148,9 @@ import 'features/fit/data/repositories/fit_repository_impl.dart';
 import 'features/fit/presentation/cubit/activity_cubit.dart';
 import 'features/fit/presentation/cubit/heart_rate_cubit.dart';
 import 'features/fit/presentation/cubit/sleep_cubit.dart';
+import 'features/fit/presentation/cubit/nutrition_cubit.dart';
+import 'features/fit/presentation/cubit/water_cubit.dart';
+import 'features/fit/presentation/cubit/mood_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -371,4 +374,7 @@ Future<void> init() async {
   sl.registerFactory(() => ActivityCubit(sl()));
   sl.registerFactory(() => HeartRateCubit(sl()));
   sl.registerFactory(() => SleepCubit(sl()));
+    sl.registerFactory(() => NutritionCubit(sl()));
+    sl.registerFactory(() => WaterCubit(sl()));
+    sl.registerFactory(() => MoodCubit(sl()));
 }

@@ -3,7 +3,9 @@ import '../storage/secure_storage.dart';
 import '../storage/preferences_helper.dart';
 import 'api_endpoints.dart';
 import '../logging/app_logger.dart';
-
+import '../../routes/app_router.dart';
+import '../../routes/route_names.dart';
+import '../../injection_container.dart' as di;
 class AuthInterceptor extends Interceptor {
   final SecureStorage _secureStorage;
   final PreferencesHelper _prefs;
@@ -81,10 +83,10 @@ class AuthInterceptor extends Interceptor {
       );
 
       final data = response.data?['data'];
-      final newAccessToken = data?['access']?['token'];
-      final newRefreshToken = data?['refresh']?['token'];
-      final newAccessExpiresAt = data?['access']?['expiresAt'];
-      final newRefreshExpiresAt = data?['refresh']?['expiresAt'];
+      final newAccessToken = data?['access']?['token']?.toString();
+      final newRefreshToken = data?['refresh']?['token']?.toString();
+      final newAccessExpiresAt = data?['access']?['expiresAt']?.toString();
+      final newRefreshExpiresAt = data?['refresh']?['expiresAt']?.toString();
 
       if (newAccessToken != null && newRefreshToken != null && newAccessExpiresAt != null && newRefreshExpiresAt != null) {
         // Save rotated tokens and expirations
@@ -131,6 +133,21 @@ class AuthInterceptor extends Interceptor {
     } catch (e) {
       // Log out patient if refresh token fails or is expired
       AppLogger.e('Token refresh failed', e.toString());
+      
+      // Reject all queued requests to prevent hanging
+      for (final queued in _failedRequestsQueue) {
+        final qHandler = queued['handler'] as ErrorInterceptorHandler;
+        final qOpts = queued['options'] as RequestOptions;
+        qHandler.reject(
+          DioException(
+            requestOptions: qOpts,
+            message: 'Token refresh failed',
+            error: e,
+          ),
+        );
+      }
+      _failedRequestsQueue.clear();
+      
       await _handleLogout();
       handler.next(err);
     } finally {
@@ -156,6 +173,14 @@ class AuthInterceptor extends Interceptor {
   Future<void> _handleLogout() async {
     await _secureStorage.clearAll();
     await _prefs.setIsLoggedIn(false);
-    // Note: Router redirection handles navigating to login screen when isLoggedIn changes to false
+    
+    // Explicitly reset the navigation stack to the login screen
+    // This prevents Android back button from popping back to protected screens
+    try {
+      final appRouter = di.sl<AppRouter>();
+      appRouter.router.go(RouteNames.login);
+    } catch (e) {
+      AppLogger.e('Failed to navigate to login', e.toString());
+    }
   }
 }

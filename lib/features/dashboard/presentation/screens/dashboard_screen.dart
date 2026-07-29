@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -758,13 +759,7 @@ class _CareTeamList extends StatelessWidget {
         // Gym
         GestureDetector(
           onTap: () => context.navigateTo(RouteNames.patientGym),
-          child: _CareTeamCard(
-            icon: LucideIcons.building2,
-            iconColor: const Color(0xFFFB7C37),
-            title: careTeam.gym?.gymName ?? 'Gym',
-            subtitle: careTeam.gym?.planName ?? 'No active membership',
-            showTrailing: true,
-          ),
+          child: _GymCard(gym: careTeam.gym),
         ),
         const SizedBox(height: 12),
 
@@ -774,11 +769,14 @@ class _CareTeamList extends StatelessWidget {
             Expanded(
               child: GestureDetector(
                 onTap: () => context.navigateTo(RouteNames.patientFitness),
-                child: _CareTeamCard(
+                child: _StaffCard(
+                  title: 'Trainer',
+                  fallbackSubtitle: 'Not assigned',
+                  staffName: careTeam.trainer?.trainerName,
+                  specialization: careTeam.trainer?.specialization,
+                  phone: careTeam.trainer?.trainerPhone,
                   icon: LucideIcons.dumbbell,
-                  iconColor: const Color(0xFF22C55E),
-                  title: careTeam.trainer?.trainerName ?? 'Trainer',
-                  subtitle: careTeam.trainer?.specialization ?? 'Not assigned',
+                  color: const Color(0xFF22C55E),
                 ),
               ),
             ),
@@ -786,12 +784,14 @@ class _CareTeamList extends StatelessWidget {
             Expanded(
               child: GestureDetector(
                 onTap: () => context.navigateTo(RouteNames.patientNutrition),
-                child: _CareTeamCard(
+                child: _StaffCard(
+                  title: 'Dietitian',
+                  fallbackSubtitle: 'Not assigned',
+                  staffName: careTeam.dietitian?.dietitianName,
+                  specialization: careTeam.dietitian?.specialization,
+                  phone: careTeam.dietitian?.dietitianPhone,
                   icon: LucideIcons.salad,
-                  iconColor: const Color(0xFFA78BFA),
-                  title: careTeam.dietitian?.dietitianName ?? 'Dietitian',
-                  subtitle:
-                      careTeam.dietitian?.specialization ?? 'Not assigned',
+                  color: const Color(0xFFA78BFA),
                 ),
               ),
             ),
@@ -802,15 +802,7 @@ class _CareTeamList extends StatelessWidget {
         // Video Consultations (Meetings)
         GestureDetector(
           onTap: () => context.navigateTo(RouteNames.patientMeetings),
-          child: _CareTeamCard(
-            icon: LucideIcons.video,
-            iconColor: const Color(0xFFF472B6),
-            title: careTeam.nextMeeting?.title ?? 'Video Consultations',
-            subtitle:
-                careTeam.nextMeeting?.staffName ??
-                'View past & upcoming meetings',
-            overline: careTeam.nextMeeting != null ? 'NEXT MEETING' : null,
-          ),
+          child: _MeetingCard(meeting: careTeam.nextMeeting),
         ),
         const SizedBox(height: 12),
       ],
@@ -818,26 +810,24 @@ class _CareTeamList extends StatelessWidget {
   }
 }
 
-class _CareTeamCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String subtitle;
-  final String? overline;
-  final bool showTrailing;
-
-  const _CareTeamCard({
-    required this.icon,
-    required this.iconColor,
-    required this.title,
-    required this.subtitle,
-    this.overline,
-    this.showTrailing = false,
-  });
+class _GymCard extends StatelessWidget {
+  final CareTeamGym? gym;
+  const _GymCard({this.gym});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hasGym = gym != null && gym!.gymName.isNotEmpty;
+    
+    int daysLeft = 0;
+    if (hasGym && gym!.endDate.isNotEmpty) {
+      final endDate = DateTime.tryParse(gym!.endDate);
+      if (endDate != null) {
+        daysLeft = endDate.difference(DateTime.now()).inDays;
+        if (daysLeft < 0) daysLeft = 0;
+      }
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -853,63 +843,231 @@ class _CareTeamCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.15),
+              color: const Color(0xFFFB7C37).withValues(alpha: 0.15),
               borderRadius: AppRadius.borderLg,
             ),
-            child: Icon(icon, color: iconColor, size: 20),
+            child: const Icon(LucideIcons.building2, color: Color(0xFFFB7C37), size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (overline != null)
+                if (hasGym) ...[
                   Text(
-                    overline!,
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                      color: isDark
-                          ? AppColors.darkTextMuted
-                          : AppColors.lightTextMuted,
+                    gym!.gymName,
+                    style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      if (gym!.status.isNotEmpty) Text(gym!.status[0].toUpperCase() + gym!.status.substring(1), style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                      if (gym!.planName.isNotEmpty) Text(' · ${gym!.planName}', style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                      if (gym!.endDate.isNotEmpty) Text(' · $daysLeft days left', style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                    ],
+                  ),
+                  if (gym!.trainerName.isNotEmpty || gym!.dietitianName.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      [
+                        if (gym!.trainerName.isNotEmpty) 'Trainer: ${gym!.trainerName}',
+                        if (gym!.dietitianName.isNotEmpty) 'Dietitian: ${gym!.dietitianName}',
+                      ].join(' · '),
+                      style: GoogleFonts.inter(fontSize: 10, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
                     ),
-                  ),
-                if (overline != null) const SizedBox(height: 2),
-                Text(
-                  title,
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: isDark
-                        ? AppColors.darkTextPrimary
-                        : AppColors.lightTextPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: isDark
-                        ? AppColors.darkTextSecondary
-                        : AppColors.lightTextSecondary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                  ]
+                ] else ...[
+                  Text('Gym', style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+                  Text('No active membership', style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                ],
               ],
             ),
           ),
-          if (showTrailing)
-            Icon(
-              LucideIcons.chevronRight,
-              color: isDark
-                  ? AppColors.darkTextMuted
-                  : AppColors.lightTextMuted,
-              size: 16,
+          Icon(LucideIcons.chevronRight, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, size: 16),
+        ],
+      ),
+    );
+  }
+}
+
+class _StaffCard extends StatelessWidget {
+  final String title;
+  final String fallbackSubtitle;
+  final String? staffName;
+  final String? specialization;
+  final String? phone;
+  final IconData icon;
+  final Color color;
+
+  const _StaffCard({
+    required this.title,
+    required this.fallbackSubtitle,
+    this.staffName,
+    this.specialization,
+    this.phone,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hasStaff = staffName != null && staffName!.isNotEmpty;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
+        borderRadius: AppRadius.borderXl,
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: AppRadius.borderLg,
             ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(height: 10),
+          if (hasStaff) ...[
+            Text(
+              staffName!,
+              style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              (specialization != null && specialization!.isNotEmpty) ? specialization! : title,
+              style: GoogleFonts.inter(fontSize: 11, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (phone != null && phone!.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              GestureDetector(
+                onTap: () {
+                  launchUrl(Uri.parse('tel:$phone'));
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(LucideIcons.phone, size: 12, color: color),
+                    const SizedBox(width: 4),
+                    Text('Call', style: GoogleFonts.inter(fontSize: 10, color: color, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+            ]
+          ] else ...[
+            Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+            Text(fallbackSubtitle, style: GoogleFonts.inter(fontSize: 11, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted)),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _MeetingCard extends StatelessWidget {
+  final CareTeamMeeting? meeting;
+  const _MeetingCard({this.meeting});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hasMeeting = meeting != null && meeting!.title.isNotEmpty;
+    
+    String formattedDate = '';
+    if (hasMeeting && meeting!.scheduledAt.isNotEmpty) {
+      final dt = DateTime.tryParse(meeting!.scheduledAt);
+      if (dt != null) {
+        formattedDate = DateFormat('d MMM, hh:mm a').format(dt);
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkBgSurface : AppColors.lightBgSurface,
+        borderRadius: AppRadius.borderXl,
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF472B6).withValues(alpha: 0.15),
+              borderRadius: AppRadius.borderLg,
+            ),
+            child: const Icon(LucideIcons.video, color: Color(0xFFF472B6), size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (hasMeeting) ...[
+                  Text(
+                    'NEXT MEETING',
+                    style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    meeting!.title,
+                    style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    '${meeting!.staffName} · $formattedDate',
+                    style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ] else ...[
+                  Text('Meetings & Consultations', style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+                  Text('No upcoming meetings', style: GoogleFonts.inter(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                ],
+              ],
+            ),
+          ),
+          if (hasMeeting && meeting!.meetingUrl.isNotEmpty) ...[
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: () {
+                launchUrl(Uri.parse(meeting!.meetingUrl), mode: LaunchMode.externalApplication);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF472B6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(LucideIcons.video, color: Colors.white, size: 14),
+                    const SizedBox(width: 4),
+                    Text('Join', style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+            ),
+          ] else if (!hasMeeting) ...[
+            Icon(LucideIcons.chevronRight, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, size: 16),
+          ],
         ],
       ),
     );

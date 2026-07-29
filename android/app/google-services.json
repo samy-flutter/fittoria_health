@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "443904722371",
-    "project_id": "fittoria-6eb7b",
-    "storage_bucket": "fittoria-6eb7b.firebasestorage.app"
+    "project_number": "189180168732",
+    "project_id": "fittoria-ae188",
+    "storage_bucket": "fittoria-ae188.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:443904722371:android:c583a5d776101de89fa976",
+        "mobilesdk_app_id": "1:189180168732:android:3f6ea083e947f24d7f6dd9",
         "android_client_info": {
-          "package_name": "com.example.fittoria_patient_app"
+          "package_name": "com.fittoria.com"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBHqFg6TxBOEh-8Qh0kzDtoGrGZBY3mmIE"
+          "current_key": "AIzaSyARtiywWNOXlAGHFvEeF5FJ5dzqr61ETyU"
         }
       ],
       "services": {

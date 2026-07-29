@@ -57,9 +57,18 @@ class _WorkoutsScreenState extends State<WorkoutsScreen> {
 
   void _saveLog() {
     if (_durationController.text.isEmpty) return;
-    Navigator.pop(context);
+    
+    final type = _selectedType;
+    final title = _titleController.text.isEmpty ? null : _titleController.text;
+    final duration = int.tryParse(_durationController.text) ?? 0;
+    final distance = double.tryParse(_distanceController.text) ?? 0.0;
+    final calories = int.tryParse(_caloriesController.text) ?? 0;
+    final avgHr = _avgHrController.text.isEmpty ? null : int.tryParse(_avgHrController.text);
+    
+    context.read<WorkoutsCubit>().log(type, title, duration, distance, calories, avgHr);
+
     UIHelpers.showSuccessSnackBar(context, 'Workout logged successfully!');
-}
+  }
 
   void _showManualLogModal(BuildContext context, bool isDark) {
     showModalBottomSheet(

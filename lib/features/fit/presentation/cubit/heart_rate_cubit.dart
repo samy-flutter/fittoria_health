@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/repositories/fit_repository.dart';
+import '../../domain/repositories/fitness_repository.dart';
 import '../../data/models/fit_models.dart';
 import '../../../../core/error/failures.dart';
 
@@ -16,7 +16,7 @@ class HeartRateError extends HeartRateState {
 }
 
 class HeartRateCubit extends Cubit<HeartRateState> {
-  final FitRepository repository;
+  final FitnessRepository repository;
   HeartRateCubit(this.repository) : super(HeartRateInitial());
 
   Future<void> load({bool silently = false}) async {

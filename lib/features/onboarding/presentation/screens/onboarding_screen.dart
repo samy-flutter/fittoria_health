@@ -100,20 +100,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   bool _canProceed() {
-    if (_currentIndex == 0) return _primaryGoal != null;
-    if (_currentIndex == 1)
+    if (_currentIndex == 0) {
+      return _primaryGoal != null;
+    }
+    if (_currentIndex == 1) {
       return _fitnessLevel != null && _activityFreq != null;
-    if (_currentIndex == 2) return true; // Height/Weight are optional
-    if (_currentIndex == 3) return _trainingMode != null;
-    if (_currentIndex == 4)
+    }
+    if (_currentIndex == 2) {
+      return true; // Height/Weight are optional
+    }
+    if (_currentIndex == 3) {
+      return _trainingMode != null;
+    }
+    if (_currentIndex == 4) {
       return _userCategory == 'general' ||
           (_userCategory == 'medical' && _medicalController.text.isNotEmpty);
+    }
     return false;
   }
 
   double? _calculateBMI() {
-    if (_heightController.text.isEmpty || _weightController.text.isEmpty)
+    if (_heightController.text.isEmpty || _weightController.text.isEmpty) {
       return null;
+    }
     final h = double.tryParse(_heightController.text);
     final w = double.tryParse(_weightController.text);
     if (h == null || w == null || h <= 0) return null;
